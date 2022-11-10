@@ -1,4 +1,4 @@
-package admin.users;
+package ru.practicum.users;
 
 import java.util.List;
 
@@ -8,6 +8,6 @@ public interface UsersService {
 
     UserDto postUser(NewUserRequest newUserRequest);
 
-    void deleteUser(int id);
+    void deleteUser(long userId);
 
 }

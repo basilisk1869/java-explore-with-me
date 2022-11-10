@@ -1,4 +1,4 @@
-package admin.categories;
+package ru.practicum.categories;
 
 import javax.validation.constraints.NotBlank;
 

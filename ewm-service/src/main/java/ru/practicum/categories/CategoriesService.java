@@ -1,4 +1,4 @@
-package admin.categories;
+package ru.practicum.categories;
 
 public interface CategoriesService {
 
@@ -6,6 +6,6 @@ public interface CategoriesService {
 
     CategoryDto postCategory(NewCategoryDto newCategoryDto);
 
-    void deleteCategory(int id);
+    void deleteCategory(long categoryId);
 
 }

@@ -1,4 +1,4 @@
-package admin.categories;
+package ru.practicum.categories;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 public class CategoryDto {
 
     @NotNull
-    Integer id;
+    Long id;
 
     @NotBlank
     String name;

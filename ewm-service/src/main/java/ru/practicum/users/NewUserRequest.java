@@ -1,4 +1,4 @@
-package admin.users;
+package ru.practicum.users;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

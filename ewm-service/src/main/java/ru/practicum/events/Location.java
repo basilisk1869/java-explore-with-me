@@ -1,25 +1,28 @@
-package admin.users;
+package ru.practicum.events;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "users")
+@Table(name = "locations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String name;
+    @NotNull
+    Float lat;
 
-    String email;
+    @NotNull
+    Float lon;
 
 }

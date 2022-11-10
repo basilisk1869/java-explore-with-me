@@ -1,4 +1,4 @@
-package admin.users;
+package ru.practicum.users;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping(path="/admin/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UsersController {
+public class AdminUsersController {
 
     @Autowired
     UsersService usersService;
@@ -30,9 +30,9 @@ public class UsersController {
         return usersService.postUser(newUserRequest);
     }
 
-    @DeleteMapping("/{id}")
-    void deleteUser(@PathVariable int id) {
-        usersService.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    void deleteUser(@PathVariable long userId) {
+        usersService.deleteUser(userId);
     }
 
 }

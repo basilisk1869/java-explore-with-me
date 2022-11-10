@@ -1,8 +1,7 @@
-package admin.categories;
+package ru.practicum.categories;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,7 @@ import javax.validation.Valid;
 @RequestMapping(path="/admin/categories")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CategoriesController {
+public class AdminCategoriesController {
 
     @Autowired
     CategoriesService categoriesService;
@@ -28,9 +27,9 @@ public class CategoriesController {
         return categoriesService.postCategory(newCategoryDto);
     }
 
-    @DeleteMapping(path = "/{id}")
-    void deleteCategory(@PathVariable int id) {
-        categoriesService.deleteCategory(id);
+    @DeleteMapping(path = "/{categoryId}")
+    void deleteCategory(@PathVariable long categoryId) {
+        categoriesService.deleteCategory(categoryId);
     }
 
 }
