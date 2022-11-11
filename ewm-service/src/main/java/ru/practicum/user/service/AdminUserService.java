@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AdminUserService {
 
-    List<UserDto> getUsers(List<Integer> ids, int from, int size);
+    List<UserDto> getUsers(List<Long> ids, int from, int size);
 
     UserDto postUser(NewUserRequest newUserRequest);
 

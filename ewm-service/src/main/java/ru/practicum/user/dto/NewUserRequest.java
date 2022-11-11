@@ -1,11 +1,18 @@
 package ru.practicum.user.dto;
 
-import javax.validation.constraints.Email;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import javax.validation.constraints.NotBlank;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewUserRequest {
 
-    @NotBlank @Email
+    @NotBlank
     String email;
 
     @NotBlank
