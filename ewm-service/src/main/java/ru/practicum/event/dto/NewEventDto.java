@@ -1,20 +1,28 @@
 package ru.practicum.event.dto;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.event.Location;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewEventDto {
 
-    @Size(min = 20, max = 2000)
+    @Length(min = 20, max = 2000)
     String annotation;
 
     @NotNull
     Integer category;
 
-    @Size(min = 20, max = 7000)
+    @Length(min = 20, max = 7000)
     String description;
 
     @NotNull

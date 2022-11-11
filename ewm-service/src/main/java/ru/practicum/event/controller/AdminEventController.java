@@ -23,9 +23,9 @@ public class AdminEventController {
     AdminEventService adminEventService;
 
     @GetMapping
-    List<EventFullDto> getEvents(@RequestParam(required = false) List<Integer> users,
+    List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
                                  @RequestParam(required = false) List<String> states,
-                                 @RequestParam(required = false) List<Integer> categories,
+                                 @RequestParam(required = false) List<Long> categories,
                                  @RequestParam(required = false) LocalDateTime rangeStart,
                                  @RequestParam(required = false) LocalDateTime rangeEnd,
                                  @RequestParam(required = false, defaultValue = "0") Integer from,

@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS events(
     participant_limit INT  NOT NULL,
     published_on TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     request_moderation BOOLEAN NOT NULL,
+    state VARCHAR NOT NULL,
     title VARCHAR(120) NOT NULL,
     FOREIGN KEY(category_id) REFERENCES categories(id),
     FOREIGN KEY(initiator_id) REFERENCES users(id),

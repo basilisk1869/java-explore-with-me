@@ -3,12 +3,14 @@ package ru.practicum.common;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 @Component
+@Primary
 public class EwmObjectMapper extends ObjectMapper {
 
     public EwmObjectMapper() {

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AdminEventService {
 
-    List<EventFullDto> getEvents(List<Integer> users, List<String> states, List<Integer> categories,
+    List<EventFullDto> getEvents(List<Long> users, List<String> states, List<Long> categories,
                                  LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                  Integer from, Integer size);
 

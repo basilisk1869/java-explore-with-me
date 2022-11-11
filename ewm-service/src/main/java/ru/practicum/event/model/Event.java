@@ -1,8 +1,8 @@
 package ru.practicum.event.model;
 
-import ru.practicum.category.model.Category;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.category.model.Category;
 import ru.practicum.event.Location;
 import ru.practicum.user.model.User;
 
@@ -48,7 +48,10 @@ public class Event {
 
     LocalDateTime publishedOn;
 
-    Boolean requestModeration = true;
+    Boolean requestModeration;
+
+    @Enumerated(EnumType.STRING)
+    EventState state = EventState.PENDING;
 
     String title;
 
