@@ -3,6 +3,7 @@ package ru.practicum.user.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewUserRequest {
 
-    @NotBlank
+    @NotBlank @Email
     String email;
 
     @NotBlank
