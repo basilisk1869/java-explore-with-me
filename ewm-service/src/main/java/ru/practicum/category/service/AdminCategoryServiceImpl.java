@@ -37,8 +37,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     @Override
-    public void deleteCategory(long categoryId) {
-        categoryRepository.deleteById(categoryId);
+    public void deleteCategory(long catId) {
+        categoryRepository.deleteById(catId);
     }
 
 }

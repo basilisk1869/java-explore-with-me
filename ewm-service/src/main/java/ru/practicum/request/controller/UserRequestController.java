@@ -30,7 +30,7 @@ public class UserRequestController {
         return userRequestService.postRequest(userId, eventId);
     }
 
-    @PatchMapping(path = "/{requestId}/cancel")
+    @PatchMapping("/{requestId}/cancel")
     ParticipationRequestDto patchRequestCancellation(@PathVariable long userId,
                                                      @PathVariable long requestId) {
         return userRequestService.cancelRequest(userId, requestId);

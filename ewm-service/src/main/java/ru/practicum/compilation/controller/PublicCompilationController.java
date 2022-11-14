@@ -26,7 +26,7 @@ public class PublicCompilationController {
         return publicCompilationService.getCompilations(pinned, from, size);
     }
 
-    @GetMapping(path = "/{compId}")
+    @GetMapping("/{compId}")
     CompilationDto getCompilation(@PathVariable long compId) {
         return publicCompilationService.getCompilation(compId);
     }

@@ -12,7 +12,7 @@ import ru.practicum.compilation.dto.NewCompilationDto;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(path="/admin/compilations")
+@RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCompilationController {
@@ -25,27 +25,27 @@ public class AdminCompilationController {
         return adminCompilationService.postCompilation(newCompilationDto);
     }
 
-    @DeleteMapping(path = "/{compId}")
+    @DeleteMapping("/{compId}")
     void deleteCompilation(@PathVariable long compId) {
         adminCompilationService.deleteCompilation(compId);
     }
 
-    @DeleteMapping(path = "/{compId}/events/{eventId}")
+    @DeleteMapping("/{compId}/events/{eventId}")
     void deleteEventFromCompilation(@PathVariable long compId, @PathVariable long eventId) {
         adminCompilationService.deleteEventFromCompilation(compId, eventId);
     }
 
-    @PatchMapping(path = "/{compId}/events/{eventId}")
+    @PatchMapping("/{compId}/events/{eventId}")
     void patchEventInCompilation(@PathVariable long compId, @PathVariable long eventId) {
         adminCompilationService.addEventInCompilation(compId, eventId);
     }
 
-    @DeleteMapping(path = "/{compId}/pin")
+    @DeleteMapping("/{compId}/pin")
     void deletePin(@PathVariable long compId) {
         adminCompilationService.unpin(compId);
     }
 
-    @PatchMapping(path = "/{compId}/pin")
+    @PatchMapping("/{compId}/pin")
     void patchPin(@PathVariable long compId) {
         adminCompilationService.pin(compId);
     }

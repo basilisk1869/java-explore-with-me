@@ -34,7 +34,7 @@ public class PublicEventController {
                 onlyAvailable, sort, from, size);
     }
 
-    @GetMapping(path = "/{eventId}")
+    @GetMapping("/{eventId}")
     EventFullDto getEvent(@PathVariable long eventId) {
         return publicEventService.getEvent(eventId);
     }

@@ -9,6 +9,6 @@ public interface AdminCategoryService {
 
     CategoryDto postCategory(NewCategoryDto newCategoryDto);
 
-    void deleteCategory(long categoryId);
+    void deleteCategory(long catId);
 
 }

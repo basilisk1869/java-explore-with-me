@@ -34,11 +34,13 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public List<EventFullDto> getEvents(List<Long> users, List<String> states, List<Long> categories,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
-        DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        return List.of();
+/*        DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
         return eventRepository.findAll(EventSpecification.getEventByAdmin(users, states, categories, rangeStart, rangeEnd),
                         dataRange.getPageable()).stream()
                 .map(user -> modelMapper.map(user, EventFullDto.class))
                 .collect(Collectors.toList());
+*/
     }
 
     @Override

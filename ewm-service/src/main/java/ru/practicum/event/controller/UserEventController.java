@@ -41,32 +41,32 @@ public class UserEventController {
         return userEventService.postEvent(userId, newEventDto);
     }
 
-    @GetMapping(path = "/{eventId}")
+    @GetMapping("/{eventId}")
     EventFullDto getEvent(@PathVariable long userId,
                           @PathVariable long eventId) {
         return userEventService.getEvent(userId, eventId);
     }
 
-    @PatchMapping(path = "/{eventId}")
+    @PatchMapping("/{eventId}")
     EventFullDto patchEventCancellation(@PathVariable long userId,
                                         @PathVariable long eventId) {
         return userEventService.cancelEvent(userId, eventId);
     }
 
-    @GetMapping(path = "/{eventId}/requests")
+    @GetMapping("/{eventId}/requests")
     List<ParticipationRequestDto> getRequests(@PathVariable long userId,
                                               @PathVariable long eventId) {
         return userEventService.getRequests(userId, eventId);
     }
 
-    @PatchMapping(path = "/{eventId}/requests/{reqId}/confirm")
+    @PatchMapping("/{eventId}/requests/{reqId}/confirm")
     ParticipationRequestDto patchRequestConfirmation(@PathVariable long userId,
                                                      @PathVariable long eventId,
                                                      @PathVariable long reqId) {
         return userEventService.confirmRequest(userId, eventId, reqId);
     }
 
-    @PatchMapping(path = "/{eventId}/requests/{reqId}/reject")
+    @PatchMapping("/{eventId}/requests/{reqId}/reject")
     ParticipationRequestDto patchRequestRejection(@PathVariable long userId,
                                                   @PathVariable long eventId,
                                                   @PathVariable long reqId) {
