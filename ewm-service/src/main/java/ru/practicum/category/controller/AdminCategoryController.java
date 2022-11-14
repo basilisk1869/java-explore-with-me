@@ -39,6 +39,6 @@ public class AdminCategoryController {
     void deleteCategory(@PathVariable long catId) {
         log.info("deleteCategory " + catId);
         adminCategoryService.deleteCategory(catId);
-   }
+    }
 
 }
