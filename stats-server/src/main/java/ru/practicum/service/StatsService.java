@@ -1,10 +1,8 @@
 package ru.practicum.service;
 
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStats;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 

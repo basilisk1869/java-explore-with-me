@@ -5,10 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.stats.EndpointHitDto;
-import ru.practicum.stats.StatsClient;
+import ru.practicum.event.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

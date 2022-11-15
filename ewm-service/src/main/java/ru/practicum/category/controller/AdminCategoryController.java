@@ -5,17 +5,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.category.service.AdminCategoryService;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.category.service.AdminCategoryService;
 
 import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@RequestMapping(path="/admin/categories")
+@RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCategoryController {

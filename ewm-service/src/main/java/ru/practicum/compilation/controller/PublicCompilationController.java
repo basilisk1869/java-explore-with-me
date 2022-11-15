@@ -11,7 +11,7 @@ import ru.practicum.compilation.service.PublicCompilationService;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/compilations")
+@RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicCompilationController {

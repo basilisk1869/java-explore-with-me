@@ -11,7 +11,7 @@ import ru.practicum.request.service.UserRequestService;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/users/{userId}/requests")
+@RequestMapping(path = "/users/{userId}/requests")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserRequestController {
