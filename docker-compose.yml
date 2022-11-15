@@ -22,7 +22,7 @@ services:
       - DB_HOST=stats-db
       - DB_PORT=5432
       - DB_NAME=stats
-      - DB_NAME_USER=stats-user
+      - DB_USER=stats-user
       - DB_PASSWORD=stats-password
     depends_on:
       - stats-db
@@ -35,8 +35,10 @@ services:
       - DB_HOST=ewm-db
       - DB_PORT=5432
       - DB_NAME=ewm
-      - DB_NAME_USER=ewm-user
+      - DB_USER=ewm-user
       - DB_PASSWORD=ewm-password
+      - STATS-SERVER=stats-server
+      - STATS_PORT=9090
     depends_on:
       - ewm-db
       - stats-server
