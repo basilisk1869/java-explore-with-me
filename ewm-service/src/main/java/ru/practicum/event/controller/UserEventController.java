@@ -3,6 +3,7 @@ package ru.practicum.event.controller;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/users/{userId}/events")
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserEventController {
 
@@ -26,36 +28,42 @@ public class UserEventController {
     List<EventFullDto> getEvents(@PathVariable long userId,
                                  @RequestParam(required = false, defaultValue = "0") Integer from,
                                  @RequestParam(required = false, defaultValue = "10") Integer size) {
+        log.info("getEvents");
         return userEventService.getEvents(userId, from, size);
     }
 
     @PatchMapping
     EventFullDto patchEvent(@PathVariable long userId,
                             @RequestBody @Valid NewEventDto newEventDto) {
+        log.info("patchEvent " + userId + " " + newEventDto);
         return userEventService.patchEvent(userId, newEventDto);
     }
 
     @PostMapping
     EventFullDto postEvent(@PathVariable long userId,
                            @RequestBody @Valid NewEventDto newEventDto) {
+        log.info("postEvent " + userId + " " + newEventDto);
         return userEventService.postEvent(userId, newEventDto);
     }
 
     @GetMapping("/{eventId}")
     EventFullDto getEvent(@PathVariable long userId,
                           @PathVariable long eventId) {
+        log.info("getEvent " + userId + " " + eventId);
         return userEventService.getEvent(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
     EventFullDto patchEventCancellation(@PathVariable long userId,
                                         @PathVariable long eventId) {
+        log.info("patchEventCancellation " + userId + " " + eventId);
         return userEventService.cancelEvent(userId, eventId);
     }
 
     @GetMapping("/{eventId}/requests")
     List<ParticipationRequestDto> getRequests(@PathVariable long userId,
                                               @PathVariable long eventId) {
+        log.info("patchEventCancellation " + userId + " " + eventId);
         return userEventService.getRequests(userId, eventId);
     }
 
@@ -63,6 +71,7 @@ public class UserEventController {
     ParticipationRequestDto patchRequestConfirmation(@PathVariable long userId,
                                                      @PathVariable long eventId,
                                                      @PathVariable long reqId) {
+        log.info("patchRequestConfirmation " + userId + " " + eventId + " " + reqId);
         return userEventService.confirmRequest(userId, eventId, reqId);
     }
 
@@ -70,6 +79,7 @@ public class UserEventController {
     ParticipationRequestDto patchRequestRejection(@PathVariable long userId,
                                                   @PathVariable long eventId,
                                                   @PathVariable long reqId) {
+        log.info("patchRequestRejection " + userId + " " + eventId + " " + reqId);
         return userEventService.rejectRequest(userId, eventId, reqId);
     }
 

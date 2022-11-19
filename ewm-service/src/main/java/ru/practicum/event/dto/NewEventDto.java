@@ -1,10 +1,14 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.event.Location;
+import ru.practicum.location.dto.LocationDto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -21,7 +25,7 @@ public class NewEventDto {
     String annotation;
 
     @NotNull
-    Integer category;
+    Long category;
 
     @Length(min = 20, max = 7000)
     String description;
@@ -30,7 +34,7 @@ public class NewEventDto {
     LocalDateTime eventDate;
 
     @NotNull
-    Location location;
+    LocationDto location;
 
     Boolean paid = false;
 

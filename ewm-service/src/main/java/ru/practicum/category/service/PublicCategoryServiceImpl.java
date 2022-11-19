@@ -7,7 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
 
@@ -29,7 +31,10 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
 
     @Override
     public CategoryDto getCategory(long catId) {
-        return modelMapper.map(categoryRepository.findById(catId).get(), CategoryDto.class);
+        Category category = categoryRepository.findById(catId).orElseThrow(() -> {
+            throw new NotFoundException("category is not found");
+        });
+        return modelMapper.map(category, CategoryDto.class);
     }
 
 }

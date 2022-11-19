@@ -3,14 +3,15 @@ package ru.practicum.event.model;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
-import ru.practicum.event.Location;
+import ru.practicum.location.model.Location;
 import ru.practicum.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
-@Table(name = "ru.practicum.events")
+@Table(name = "events")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
@@ -54,5 +55,11 @@ public class Event {
     EventState state = EventState.PENDING;
 
     String title;
+
+    @ManyToMany
+    @JoinTable(name = "event_compilations",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
+    Set<Event> compilations;
 
 }
