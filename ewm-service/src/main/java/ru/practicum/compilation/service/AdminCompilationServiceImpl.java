@@ -15,6 +15,8 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.NotFoundException;
 
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -32,6 +34,9 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     @Override
     public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = modelMapper.map(newCompilationDto, Compilation.class);
+        compilation.setEvents(newCompilationDto.getEvents().stream()
+                .map(this::getEvent)
+                .collect(Collectors.toList()));
         compilationRepository.save(compilation);
         return modelMapper.map(compilation, CompilationDto.class);
     }

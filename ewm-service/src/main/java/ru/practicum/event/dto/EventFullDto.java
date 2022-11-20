@@ -1,10 +1,11 @@
 package ru.practicum.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.location.model.Location;
+import ru.practicum.location.dto.LocationDto;
 import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class EventFullDto {
 
     String annotation;
 
-    CategoryDto categoryDto;
+    CategoryDto category;
 
     Integer confirmedRequests;
 
@@ -23,21 +24,25 @@ public class EventFullDto {
 
     String description;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     Long id;
 
     UserShortDto initiator;
 
-    Location location;
+    LocationDto location;
 
     Boolean paid;
 
     Integer participantLimit;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
 
     Boolean requestModeration;
+
+    String state;
 
     String title;
 

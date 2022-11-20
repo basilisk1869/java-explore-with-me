@@ -2,6 +2,7 @@ package ru.practicum.event.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.category.model.Category;
 import ru.practicum.location.model.Location;
 import ru.practicum.user.model.User;
@@ -29,6 +30,7 @@ public class Event {
     @JoinColumn(name = "category_id")
     Category category;
 
+    @CreationTimestamp
     LocalDateTime createdOn;
 
     String description;

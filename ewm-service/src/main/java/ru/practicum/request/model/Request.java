@@ -2,6 +2,7 @@ package ru.practicum.request.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
 
@@ -21,6 +22,7 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    @CreationTimestamp
     LocalDateTime created;
 
     @ManyToOne
@@ -28,10 +30,10 @@ public class Request {
     Event event;
 
     @ManyToOne
-    @JoinColumn(name = "initiator_id")
+    @JoinColumn(name = "requester_id")
     User requester;
 
     @Enumerated(EnumType.STRING)
-    RequestStatus status;
+    RequestStatus status = RequestStatus.PENDING;
 
 }
