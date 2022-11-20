@@ -27,7 +27,8 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris,
+        Boolean unique) {
         return null;
     }
 

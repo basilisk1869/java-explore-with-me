@@ -1,5 +1,7 @@
 package ru.practicum.event.service;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,12 +13,18 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.GetterRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventRequest;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestStatus;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
@@ -39,14 +47,22 @@ public class UserEventServiceImpl implements UserEventService {
     @Autowired
     LocationRepository locationRepository;
 
+    @Autowired
+    RequestRepository requestRepository;
+
     @Override
     public List<EventFullDto> getEvents(long userId, Integer from, Integer size) {
-        return null;
+        User initiator = getterRepository.getUser(userId);
+        return eventRepository.findAllByInitiator(initiator).stream()
+            .map(event -> modelMapper.map(event, EventFullDto.class))
+            .collect(Collectors.toList());
     }
 
     @Override
-    public EventFullDto patchEvent(long userId, NewEventDto newEventDto) {
-        return null;
+    public EventFullDto patchEvent(long userId, UpdateEventRequest updateEventRequest) {
+        Event event = getterRepository.getEventByUser(userId, updateEventRequest.getEventId());
+        modelMapper.map(updateEventRequest, event);
+        return modelMapper.map(event, EventFullDto.class);
     }
 
     @Override
@@ -65,26 +81,53 @@ public class UserEventServiceImpl implements UserEventService {
 
     @Override
     public EventFullDto getEvent(long userId, long eventId) {
-        return null;
+        Event event = getterRepository.getEventByUser(userId, eventId);
+        return modelMapper.map(event, EventFullDto.class);
     }
 
     @Override
     public EventFullDto cancelEvent(long userId, long eventId) {
-        return null;
+        Event event = getterRepository.getEventByUser(userId, eventId);
+        if (event.getState().equals(EventState.PENDING)) {
+            EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
+            eventRepository.delete(event);
+            return eventFullDto;
+        } else {
+            throw new AccessDeniedException("event cannot be cancelled");
+        }
     }
 
     @Override
     public List<ParticipationRequestDto> getRequests(long userId, long eventId) {
-        return null;
+        Event event = getterRepository.getEventByUser(userId, eventId);
+        return requestRepository.findAllByEvent(event).stream()
+            .map(request -> modelMapper.map(request, ParticipationRequestDto.class))
+            .collect(Collectors.toList());
     }
 
     @Override
     public ParticipationRequestDto confirmRequest(long userId, long eventId, long reqId) {
-        return null;
+        Event event = getterRepository.getEventByUser(userId, eventId);
+        Request request = getterRepository.getRequest(reqId);
+        if (request.getEvent().equals(event)) {
+            request.setStatus(RequestStatus.ACCEPTED);
+            requestRepository.save(request);
+            return modelMapper.map(request, ParticipationRequestDto.class);
+        } else {
+            throw new AccessDeniedException("request not for this event");
+        }
     }
 
     @Override
     public ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) {
-        return null;
+        Event event = getterRepository.getEventByUser(userId, eventId);
+        Request request = getterRepository.getRequest(reqId);
+        if (request.getEvent().equals(event)) {
+            request.setStatus(RequestStatus.FORBIDDEN);
+            requestRepository.save(request);
+            return modelMapper.map(request, ParticipationRequestDto.class);
+        } else {
+            throw new AccessDeniedException("request not for this event");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package ru.practicum.category.service;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,6 +12,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.GetterRepository;
+import ru.practicum.exception.AlreadyExistsException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +30,21 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto patchCategory(CategoryDto categoryDto) {
-        Category category = modelMapper.map(categoryDto, Category.class);
-        categoryRepository.save(category);
-        return modelMapper.map(category, CategoryDto.class);
+        Optional<Category> category = categoryRepository.findById(categoryDto.getId());
+        if (category.isPresent()) {
+            modelMapper.map(categoryDto, category);
+        } else {
+            category = Optional.of(modelMapper.map(categoryDto, Category.class));
+        }
+        categoryRepository.save(category.get());
+        return modelMapper.map(category.get(), CategoryDto.class);
     }
 
     @Override
     public CategoryDto postCategory(NewCategoryDto newCategoryDto) {
+        if (categoryRepository.findByName(newCategoryDto.getName()).isPresent()) {
+            throw new AlreadyExistsException("category is already exists");
+        }
         Category category = modelMapper.map(newCategoryDto, Category.class);
         categoryRepository.save(category);
         return modelMapper.map(category, CategoryDto.class);

@@ -21,13 +21,13 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewEventDto {
 
-    @Length(min = 20, max = 2000)
+    @NotNull @Length(min = 20, max = 2000)
     String annotation;
 
     @NotNull
     Long category;
 
-    @Length(min = 20, max = 7000)
+    @NotNull @Length(min = 20, max = 7000)
     String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -42,7 +42,7 @@ public class NewEventDto {
 
     Boolean requestModeration = true;
 
-    @Size(min = 3, max = 120)
+    @NotNull @Size(min = 3, max = 120)
     String title;
 
 }

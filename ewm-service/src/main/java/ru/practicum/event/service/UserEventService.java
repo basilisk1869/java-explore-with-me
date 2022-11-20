@@ -2,6 +2,7 @@ package ru.practicum.event.service;
 
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventRequest;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -10,7 +11,7 @@ public interface UserEventService {
 
     List<EventFullDto> getEvents(long userId, Integer from, Integer size);
 
-    EventFullDto patchEvent(long userId, NewEventDto newEventDto);
+    EventFullDto patchEvent(long userId, UpdateEventRequest updateEventRequest);
 
     EventFullDto postEvent(long userId, NewEventDto newEventDto);
 

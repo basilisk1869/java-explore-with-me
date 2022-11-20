@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventRequest;
 import ru.practicum.event.service.UserEventService;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
@@ -34,9 +35,9 @@ public class UserEventController {
 
     @PatchMapping
     EventFullDto patchEvent(@PathVariable long userId,
-                            @RequestBody @Valid NewEventDto newEventDto) {
-        log.info("patchEvent " + userId + " " + newEventDto);
-        return userEventService.patchEvent(userId, newEventDto);
+                            @RequestBody @Valid UpdateEventRequest updateEventRequest) {
+        log.info("patchEvent " + userId + " " + updateEventRequest);
+        return userEventService.patchEvent(userId, updateEventRequest);
     }
 
     @PostMapping

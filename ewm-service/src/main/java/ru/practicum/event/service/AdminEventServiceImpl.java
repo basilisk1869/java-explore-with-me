@@ -41,16 +41,16 @@ public class AdminEventServiceImpl implements AdminEventService {
     public List<EventFullDto> getEvents(List<Long> userIds, List<String> stateIds, List<Long> categoryIds,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        List<User> users = userIds.stream()
+        List<User> users = (userIds == null ? List.of() : userIds.stream()
             .map(getterRepository::getUser)
-            .collect(Collectors.toList());
-        List<EventState> states = stateIds.stream()
+            .collect(Collectors.toList()));
+        List<EventState> states = (stateIds == null ? List.of() : stateIds.stream()
             .map(EventState::valueOf)
-            .collect(Collectors.toList());
-        List<Category> categories = categoryIds.stream()
+            .collect(Collectors.toList()));
+        List<Category> categories = (categoryIds == null ? List.of() : categoryIds.stream()
             .map(getterRepository::getCategory)
-            .collect(Collectors.toList());
-        return eventRepository.findAll(EventSpecification.getEventByAdmin(users, states, categories, rangeStart, rangeEnd),
+            .collect(Collectors.toList()));
+        return eventRepository.findAll(EventSpecification.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd),
                         dataRange.getPageable()).stream()
                 .map(user -> modelMapper.map(user, EventFullDto.class))
                 .collect(Collectors.toList());

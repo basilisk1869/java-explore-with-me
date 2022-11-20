@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.DataRange;
 import ru.practicum.common.GetterRepository;
+import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -43,6 +44,9 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public UserDto postUser(NewUserRequest newUserRequest) {
+        if (userRepository.findByEmail(newUserRequest.getEmail()).isPresent()) {
+            throw new AlreadyExistsException("user is already exists");
+        }
         User user = modelMapper.map(newUserRequest, User.class);
         userRepository.save(user);
         return modelMapper.map(user, UserDto.class);

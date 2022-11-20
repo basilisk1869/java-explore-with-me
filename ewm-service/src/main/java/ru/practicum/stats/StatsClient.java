@@ -1,13 +1,18 @@
 package ru.practicum.stats;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -34,23 +39,21 @@ public class StatsClient {
                 requestEntity, Object.class);
     }
 
+    public ResponseEntity<List<ViewStats>> getUrlViews(LocalDateTime start, LocalDateTime end,
+        List<String> uris, Boolean unique) {
+        Map<String, Object> parameters = Map.of(
+            "start", start,
+            "end", end,
+            "uris", uris,
+            "unique", unique);
+        HttpEntity<Object> requestEntity = new HttpEntity<>(null, defaultHeaders());
+        return restTemplate.exchange("/views?start={start}&end={end}&uris={uris}&unique={unique}",
+            HttpMethod.POST, requestEntity, new ParameterizedTypeReference<List<ViewStats>>(){}, parameters);
+    }
+
     private HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
-    }
-
-    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response;
-        }
-
-        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
-
-        if (response.hasBody()) {
-            return responseBuilder.body(response.getBody());
-        }
-
-        return responseBuilder.build();
     }
 }
