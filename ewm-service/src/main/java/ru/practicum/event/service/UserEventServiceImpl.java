@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
@@ -30,10 +31,7 @@ public class UserEventServiceImpl implements UserEventService {
     EventRepository eventRepository;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    CategoryRepository categoryRepository;
+    GetterRepository getterRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -53,8 +51,8 @@ public class UserEventServiceImpl implements UserEventService {
 
     @Override
     public EventFullDto postEvent(long userId, NewEventDto newEventDto) {
-        User user = getUser(userId);
-        Category category = getCategory(newEventDto.getCategory());
+        User user = getterRepository.getUser(userId);
+        Category category = getterRepository.getCategory(newEventDto.getCategory());
         Location location = modelMapper.map(newEventDto.getLocation(), Location.class);
         locationRepository.save(location);
         Event event = modelMapper.map(newEventDto, Event.class);
@@ -88,17 +86,5 @@ public class UserEventServiceImpl implements UserEventService {
     @Override
     public ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) {
         return null;
-    }
-
-    private User getUser(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("user is not found");
-        });
-    }
-
-    private Category getCategory(long catId) {
-        return categoryRepository.findById(catId).orElseThrow(() -> {
-            throw new NotFoundException("category is not found");
-        });
     }
 }

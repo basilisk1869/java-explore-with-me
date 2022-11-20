@@ -7,7 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.category.model.Category;
 import ru.practicum.common.DataRange;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
@@ -32,10 +34,22 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Autowired
     ModelMapper modelMapper;
 
+    @Autowired
+    GetterRepository getterRepository;
+
     @Override
-    public List<EventFullDto> getEvents(List<Long> users, List<String> states, List<Long> categories,
+    public List<EventFullDto> getEvents(List<Long> userIds, List<String> stateIds, List<Long> categoryIds,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        List<User> users = userIds.stream()
+            .map(getterRepository::getUser)
+            .collect(Collectors.toList());
+        List<EventState> states = stateIds.stream()
+            .map(EventState::valueOf)
+            .collect(Collectors.toList());
+        List<Category> categories = categoryIds.stream()
+            .map(getterRepository::getCategory)
+            .collect(Collectors.toList());
         return eventRepository.findAll(EventSpecification.getEventByAdmin(users, states, categories, rangeStart, rangeEnd),
                         dataRange.getPageable()).stream()
                 .map(user -> modelMapper.map(user, EventFullDto.class))
@@ -51,7 +65,7 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     @Override
     public EventFullDto publishEvent(long eventId) {
-        Event event = getEvent(eventId);
+        Event event = getterRepository.getEvent(eventId);
         event.setState(EventState.PUBLISHED);
         eventRepository.save(event);
         return modelMapper.map(event, EventFullDto.class);
@@ -59,15 +73,9 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     @Override
     public EventFullDto rejectEvent(long eventId) {
-        Event event = getEvent(eventId);
+        Event event = getterRepository.getEvent(eventId);
         event.setState(EventState.REJECTED);
         eventRepository.save(event);
         return modelMapper.map(event, EventFullDto.class);
-    }
-
-    private Event getEvent(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new NotFoundException("event is not found");
-        });
     }
 }

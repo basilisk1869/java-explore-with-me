@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
@@ -26,7 +27,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     CompilationRepository compilationRepository;
 
     @Autowired
-    EventRepository eventRepository;
+    GetterRepository getterRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -35,7 +36,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = modelMapper.map(newCompilationDto, Compilation.class);
         compilation.setEvents(newCompilationDto.getEvents().stream()
-                .map(this::getEvent)
+                .map(getterRepository::getEvent)
                 .collect(Collectors.toList()));
         compilationRepository.save(compilation);
         return modelMapper.map(compilation, CompilationDto.class);
@@ -43,14 +44,14 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     public void deleteCompilation(long compId) {
-        Compilation compilation = getCompilation(compId);
+        Compilation compilation = getterRepository.getCompilation(compId);
         compilationRepository.delete(compilation);
     }
 
     @Override
     public void deleteEventFromCompilation(long compId, long eventId) {
-        Compilation compilation = getCompilation(compId);
-        Event event = getEvent(eventId);
+        Compilation compilation = getterRepository.getCompilation(compId);
+        Event event = getterRepository.getEvent(eventId);
         if (compilation.getEvents().contains(event)) {
             compilation.getEvents().remove(event);
             compilationRepository.save(compilation);
@@ -61,8 +62,8 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     public void addEventInCompilation(long compId, long eventId) {
-        Compilation compilation = getCompilation(compId);
-        Event event = getEvent(eventId);
+        Compilation compilation = getterRepository.getCompilation(compId);
+        Event event = getterRepository.getEvent(eventId);
         if (!compilation.getEvents().contains(event)) {
             compilation.getEvents().add(event);
             compilationRepository.save(compilation);
@@ -73,24 +74,15 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     public void pin(long compId) {
-
+        Compilation compilation = getterRepository.getCompilation(compId);
+        compilation.setPinned(true);
+        compilationRepository.save(compilation);
     }
 
     @Override
     public void unpin(long compId) {
-
+        Compilation compilation = getterRepository.getCompilation(compId);
+        compilation.setPinned(false);
+        compilationRepository.save(compilation);
     }
-
-    private Compilation getCompilation(long compId) {
-        return compilationRepository.findById(compId).orElseThrow(() -> {
-            throw new NotFoundException("compilation is not found");
-        });
-    }
-
-    private Event getEvent(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new NotFoundException("event is not found");
-        });
-    }
-
 }

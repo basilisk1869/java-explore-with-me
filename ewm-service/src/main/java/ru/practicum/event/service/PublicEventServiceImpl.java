@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
@@ -23,6 +24,9 @@ public class PublicEventServiceImpl implements PublicEventService {
     EventRepository eventRepository;
 
     @Autowired
+    GetterRepository getterRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Override
@@ -32,12 +36,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     @Override
     public EventFullDto getEvent(long eventId) {
-        return modelMapper.map(getEventById(eventId), EventFullDto.class);
-    }
-
-    private Event getEventById(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new NotFoundException("event is not found");
-        });
+        Event event = getterRepository.getEvent(eventId);
+        return modelMapper.map(event, EventFullDto.class);
     }
 }

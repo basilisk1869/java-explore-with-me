@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.DataRange;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -24,6 +25,9 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    GetterRepository getterRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -46,13 +50,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public void deleteUser(long userId) {
-        User user = getUser(userId);
+        User user = getterRepository.getUser(userId);
         userRepository.delete(user);
-    }
-
-    private User getUser(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("user is not found");
-        });
     }
 }

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.practicum.common.GetterRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
@@ -30,14 +31,11 @@ public class UserRequestServiceImpl implements UserRequestService {
     ModelMapper modelMapper;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    EventRepository eventRepository;
+    GetterRepository getterRepository;
 
     @Override
     public List<ParticipationRequestDto> getRequests(long userId) {
-        User requester = getUser(userId);
+        User requester = getterRepository.getUser(userId);
         return requestRepository.findAllByRequester(requester).stream()
                 .map(request -> modelMapper.map(request, ParticipationRequestDto.class))
                 .collect(Collectors.toList());
@@ -45,8 +43,8 @@ public class UserRequestServiceImpl implements UserRequestService {
 
     @Override
     public ParticipationRequestDto postRequest(long userId, long eventId) {
-        User requester = getUser(userId);
-        Event event = getEvent(eventId);
+        User requester = getterRepository.getUser(userId);
+        Event event = getterRepository.getEvent(eventId);
         Request request = new Request();
         request.setRequester(requester);
         request.setEvent(event);
@@ -56,20 +54,12 @@ public class UserRequestServiceImpl implements UserRequestService {
 
     @Override
     public ParticipationRequestDto cancelRequest(long userId, long eventId) {
-        User user = getUser(userId);
-//        List<>
-        return null;
-    }
-
-    private User getUser(long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> {
-            throw new NotFoundException("user is not found");
-        });
-    }
-
-    private Event getEvent(long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new NotFoundException("event is not found");
-        });
+        User requester = getterRepository.getUser(userId);
+        Event event = getterRepository.getEvent(eventId);
+        Request request = requestRepository.findByRequesterAndEvent(requester, event)
+            .orElseThrow(() -> {
+                throw new NotFoundException("user is not found");
+            });
+        return modelMapper.map(request, ParticipationRequestDto.class);
     }
 }

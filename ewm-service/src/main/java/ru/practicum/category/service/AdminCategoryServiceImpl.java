@@ -10,6 +10,7 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.common.GetterRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,9 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    GetterRepository getterRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -38,7 +42,8 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public void deleteCategory(long catId) {
-        categoryRepository.deleteById(catId);
+        Category category = getterRepository.getCategory(catId);
+        categoryRepository.delete(category);
     }
 
 }
