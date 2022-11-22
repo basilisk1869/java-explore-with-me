@@ -5,12 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.DataRange;
 import ru.practicum.common.GetterRepository;
 import ru.practicum.exception.AlreadyExistsException;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.model.User;
@@ -36,7 +37,14 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return userRepository.findAll(dataRange.getPageable()).stream()
+        List<User> users1 = userRepository.findAll();
+        System.out.println("test1 = " + users1);
+        Page<User> users2 = userRepository.findAll(dataRange.getPageable());
+        System.out.println("test2 = " + users2.getContent());
+        Pageable pageable = dataRange.getPageable();
+        System.out.println("test3 = " + pageable);
+        System.out.println("test4 = " + ids.size());
+        return userRepository.findAll(dataRange.getPageable()).getContent().stream()
                 .filter(user -> (ids.size() == 0 || ids.contains(user.getId())))
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
@@ -49,6 +57,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         }
         User user = modelMapper.map(newUserRequest, User.class);
         userRepository.save(user);
+        userRepository.flush();
         return modelMapper.map(user, UserDto.class);
     }
 
@@ -56,5 +65,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     public void deleteUser(long userId) {
         User user = getterRepository.getUser(userId);
         userRepository.delete(user);
+        userRepository.flush();
     }
 }

@@ -1,7 +1,5 @@
 package ru.practicum.event.service;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
-import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.GetterRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
@@ -18,7 +15,6 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AccessDeniedException;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -26,9 +22,9 @@ import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -89,9 +85,9 @@ public class UserEventServiceImpl implements UserEventService {
     public EventFullDto cancelEvent(long userId, long eventId) {
         Event event = getterRepository.getEventByUser(userId, eventId);
         if (event.getState().equals(EventState.PENDING)) {
-            EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
-            eventRepository.delete(event);
-            return eventFullDto;
+            event.setState(EventState.CANCELED);
+            eventRepository.save(event);
+            return modelMapper.map(event, EventFullDto.class);
         } else {
             throw new AccessDeniedException("event cannot be cancelled");
         }
@@ -110,7 +106,7 @@ public class UserEventServiceImpl implements UserEventService {
         Event event = getterRepository.getEventByUser(userId, eventId);
         Request request = getterRepository.getRequest(reqId);
         if (request.getEvent().equals(event)) {
-            request.setStatus(RequestStatus.ACCEPTED);
+            request.setStatus(RequestStatus.CONFIRMED);
             requestRepository.save(request);
             return modelMapper.map(request, ParticipationRequestDto.class);
         } else {
@@ -123,7 +119,7 @@ public class UserEventServiceImpl implements UserEventService {
         Event event = getterRepository.getEventByUser(userId, eventId);
         Request request = getterRepository.getRequest(reqId);
         if (request.getEvent().equals(event)) {
-            request.setStatus(RequestStatus.FORBIDDEN);
+            request.setStatus(RequestStatus.REJECTED);
             requestRepository.save(request);
             return modelMapper.map(request, ParticipationRequestDto.class);
         } else {

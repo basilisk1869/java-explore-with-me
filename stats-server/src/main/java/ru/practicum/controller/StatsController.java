@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStats;
@@ -29,10 +30,11 @@ public class StatsController {
     }
 
     @GetMapping(path = "stats")
-    List<ViewStats> getViewStats(@RequestParam LocalDateTime start,
-                                 @RequestParam LocalDateTime end,
+    List<ViewStats> getViewStats(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
+                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
                                  @RequestParam(required = false) List<String> uris,
                                  @RequestParam(required = false) Boolean unique) {
+        log.info("hit : " + start + " " + end + " " + uris + " " + unique);
         return statsService.getViewStats(start, end, uris, unique);
     }
 

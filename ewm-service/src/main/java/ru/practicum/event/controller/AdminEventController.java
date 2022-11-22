@@ -6,16 +6,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.event.dto.AdminUpdateEventRequest;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.service.AdminEventService;
 
 import javax.validation.Valid;
@@ -45,9 +38,10 @@ public class AdminEventController {
     }
 
     @PutMapping("/{eventId}")
-    EventFullDto putEvent(@PathVariable long eventId, @RequestBody @Valid NewEventDto newEventDto) {
-        log.info("putEvent " + eventId + " " + newEventDto);
-        return adminEventService.putEvent(eventId, newEventDto);
+    EventFullDto putEvent(@PathVariable long eventId,
+                          @RequestBody @Valid AdminUpdateEventRequest adminUpdateEventRequest) {
+        log.info("putEvent " + eventId + " " + adminUpdateEventRequest);
+        return adminEventService.putEvent(eventId, adminUpdateEventRequest);
     }
 
     @PatchMapping("/{eventId}/publish")

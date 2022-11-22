@@ -26,15 +26,17 @@ public class AdminUserController {
     @GetMapping
     List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
                            @RequestParam(required = false, defaultValue = "0") int from,
-                           @RequestParam(required = false, defaultValue = "10") int size) {
-        log.info("getUsers");
-        return adminUserService.getUsers(ids, from, size);
+                           @RequestParam(required = false, defaultValue = "20") int size) {
+        List<UserDto> result = adminUserService.getUsers(ids, from, size);
+        log.info("getUsers " + result);
+        return result;
     }
 
     @PostMapping
     UserDto postUser(@RequestBody @Valid NewUserRequest newUserRequest) {
-        log.info("postUser " + newUserRequest);
-        return adminUserService.postUser(newUserRequest);
+        UserDto userDto = adminUserService.postUser(newUserRequest);
+        log.info("postUser " + userDto);
+        return userDto;
     }
 
     @DeleteMapping("/{userId}")
@@ -42,5 +44,4 @@ public class AdminUserController {
         log.info("deleteUser " + userId);
         adminUserService.deleteUser(userId);
     }
-
 }

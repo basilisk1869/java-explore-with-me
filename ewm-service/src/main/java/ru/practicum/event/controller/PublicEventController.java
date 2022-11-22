@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.PublicEventService;
 import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.StatsClient;
@@ -34,7 +35,7 @@ public class PublicEventController {
     StatsClient statsClient;
 
     @GetMapping
-    List<EventFullDto> getEvents(@RequestParam(required = false) String text,
+    List<EventShortDto> getEvents(@RequestParam(required = false) String text,
                                  @RequestParam(required = false) List<Integer> categories,
                                  @RequestParam(required = false) Boolean paid,
                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
@@ -45,12 +46,13 @@ public class PublicEventController {
                                  @RequestParam(required = false, defaultValue = "10") Integer size,
                                  HttpServletRequest request) {
         log.info("getEvents");
-        List<EventFullDto> result = publicEventService.getEvents(text, categories, paid, rangeStart, rangeEnd,
+        List<EventShortDto> result = publicEventService.getEvents(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
         statsClient.postEndpointHit(EndpointHitDto.builder()
                 .app("ewm")
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
                 .build());
         return result;
     }
@@ -63,6 +65,7 @@ public class PublicEventController {
                 .app("ewm")
                 .uri(request.getRequestURI())
                 .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
                 .build());
         return eventFullDto;
     }

@@ -1,16 +1,13 @@
 package ru.practicum.event.repository;
 
-import java.beans.Expression;
-import javax.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import ru.practicum.event.model.EventSort;
-import ru.practicum.event.model.EventState;
-import ru.practicum.user.model.User;
 
 public class EventSpecification {
 
@@ -30,19 +27,29 @@ public class EventSpecification {
 
     public static Specification<Event> getEventsByPublic(String text, List<Category> categories,
         Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable) {
+        final String preparedText;
+        if (text != null) {
+            preparedText = "%" + text + "%";
+        } else {
+            preparedText = null;
+        }
         return (root, query, builder) -> builder.and(
-            text == null ?  builder.isTrue(builder.literal(true)) :
-                builder.or(
-                    builder.like(builder.upper(root.get("annotation")), "%" + text.toUpperCase() + "%"),
-                    builder.like(builder.upper(root.get("description")), "%" + text.toUpperCase() + "%")),
+            /*onlyAvailable == null ?*/ builder.isTrue(builder.literal(true))/* :
+                builder.lessThan(root.get("participantLimit"), root.get("participantLimit"))*/,
             builder.and(
-                categories.size() == 0 ?  builder.isTrue(builder.literal(true)) : root.get("category").in(categories),
+                preparedText == null ? builder.isTrue(builder.literal(true)) :
+                    builder.or(
+                        builder.like(builder.upper(root.get("annotation")), preparedText),
+                        builder.like(builder.upper(root.get("description")), preparedText)),
                 builder.and(
-                    paid == null ?  builder.isTrue(builder.literal(true)) : builder.isTrue(root.get("paid")),
-                    rangeStart == null && rangeEnd == null ?
-                        builder.greaterThanOrEqualTo(root.get("eventDate"), LocalDateTime.now()) :
-                        builder.and(
-                            rangeStart == null ? builder.isTrue(builder.literal(true)) : builder.greaterThanOrEqualTo(root.get("eventDate"), rangeStart),
-                            rangeEnd == null ?  builder.isTrue(builder.literal(true)) : builder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd)))));
+                    /*categories.size() == 0 ? */builder.isTrue(builder.literal(true))/*
+                            : root.<Category>get("category").in(categories)*/,
+                    builder.and(
+                        paid == null ?  builder.isTrue(builder.literal(true)) : builder.isTrue(root.get("paid")),
+                        rangeStart == null && rangeEnd == null ?
+                            builder.greaterThanOrEqualTo(root.get("eventDate"), LocalDateTime.now()) :
+                            builder.and(
+                                rangeStart == null ? builder.isTrue(builder.literal(true)) : builder.greaterThanOrEqualTo(root.get("eventDate"), rangeStart),
+                                rangeEnd == null ?  builder.isTrue(builder.literal(true)) : builder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd))))));
     }
 }

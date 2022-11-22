@@ -10,13 +10,12 @@ import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
 import ru.practicum.common.DataRange;
 import ru.practicum.common.GetterRepository;
+import ru.practicum.event.dto.AdminUpdateEventRequest;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.EventSpecification;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
@@ -52,13 +51,14 @@ public class AdminEventServiceImpl implements AdminEventService {
             .collect(Collectors.toList()));
         return eventRepository.findAll(EventSpecification.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd),
                         dataRange.getPageable()).stream()
-                .map(user -> modelMapper.map(user, EventFullDto.class))
+                .map(getterRepository::mapEventToFullDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public EventFullDto putEvent(long eventId, NewEventDto newEventDto) {
-        Event event = modelMapper.map(newEventDto, Event.class);
+    public EventFullDto putEvent(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+        Event event = getterRepository.getEvent(eventId);
+        modelMapper.map(adminUpdateEventRequest, event);
         eventRepository.save(event);
         return modelMapper.map(event, EventFullDto.class);
     }
@@ -67,6 +67,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     public EventFullDto publishEvent(long eventId) {
         Event event = getterRepository.getEvent(eventId);
         event.setState(EventState.PUBLISHED);
+        event.setPublishedOn(LocalDateTime.now());
         eventRepository.save(event);
         return modelMapper.map(event, EventFullDto.class);
     }
@@ -74,7 +75,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public EventFullDto rejectEvent(long eventId) {
         Event event = getterRepository.getEvent(eventId);
-        event.setState(EventState.REJECTED);
+        event.setState(EventState.CANCELED);
         eventRepository.save(event);
         return modelMapper.map(event, EventFullDto.class);
     }

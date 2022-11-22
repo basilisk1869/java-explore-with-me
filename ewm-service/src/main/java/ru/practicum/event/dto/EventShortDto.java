@@ -15,7 +15,7 @@ public class EventShortDto {
 
     String annotation;
 
-    CategoryDto categoryDto;
+    CategoryDto category;
 
     Integer confirmedRequests;
 

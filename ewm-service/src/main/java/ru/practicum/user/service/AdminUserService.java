@@ -12,5 +12,4 @@ public interface AdminUserService {
     UserDto postUser(NewUserRequest newUserRequest);
 
     void deleteUser(long userId);
-
 }

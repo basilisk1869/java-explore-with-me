@@ -20,7 +20,7 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    Long id;
 
     @CreationTimestamp
     LocalDateTime created;

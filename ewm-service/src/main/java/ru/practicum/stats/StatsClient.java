@@ -1,9 +1,6 @@
 package ru.practicum.stats;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +9,15 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -25,9 +28,13 @@ public class StatsClient {
     ObjectMapper objectMapper;
 
     public StatsClient(@Autowired RestTemplateBuilder builder, @Autowired ObjectMapper objectMapper) {
+        Optional<Properties> properties = getApplicationProperties();
+        String statsServerUrl = "http://stats-server:9090";
+        if (properties.isPresent()) {
+            statsServerUrl = properties.get().getProperty("stats-server-url", statsServerUrl);
+        }
         restTemplate = builder
-                .uriTemplateHandler(new DefaultUriBuilderFactory(
-                        "https://stats-server:9090"))
+                .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUrl))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
         this.objectMapper = objectMapper;
@@ -55,5 +62,15 @@ public class StatsClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
+    }
+
+    private Optional<Properties> getApplicationProperties() {
+        try {
+            Properties properties = new Properties();
+            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
+            return Optional.of(properties);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 }

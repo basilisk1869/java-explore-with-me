@@ -1,6 +1,5 @@
 package ru.practicum.category.service;
 
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,10 +12,10 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.DataRange;
 import ru.practicum.common.GetterRepository;
-import ru.practicum.exception.NotFoundException;
+import ru.practicum.user.model.User;
 
 import java.util.List;
-import ru.practicum.user.model.User;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

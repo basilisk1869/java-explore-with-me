@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
+import ru.practicum.location.dto.LocationDto;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UpdateEventRequest {
+public class AdminUpdateEventRequest {
 
   @Length(min = 20, max = 2000)
   String annotation;
@@ -26,11 +27,13 @@ public class UpdateEventRequest {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   LocalDateTime eventDate;
 
-  Long eventId;
+  LocationDto location;
 
   Boolean paid;
 
   Integer participantLimit;
+
+  Boolean requestModeration;
 
   @Size(min = 3, max = 120)
   String title;

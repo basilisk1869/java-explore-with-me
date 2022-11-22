@@ -1,7 +1,8 @@
-package ru.practicum.shareit.common;
+package ru.practicum.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,10 +25,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleAlreadyExists(final AlreadyExistsException exception) {
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ApiError> handleAlreadyExists(final AlreadyExistsException exception) {
         logException(exception);
-        return exception.getMessage();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.builder()
+                .status(HttpStatus.CONFLICT.toString())
+                .message(exception.getMessage())
+                .build());
     }
 
     @ExceptionHandler
@@ -67,6 +71,7 @@ public class ErrorHandler {
         if (exception.getMessage() != null) {
             log.error(exception.getMessage());
         }
+        exception.printStackTrace();
     }
 
 }

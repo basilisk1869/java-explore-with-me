@@ -1,24 +1,27 @@
-package ru.practicum.stats;
+package ru.practicum.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class EndpointHitDto {
+public class ApiError {
 
-    String app;
+    List<String> errors;
 
-    String uri;
+    String message;
 
-    String ip;
+    String reason;
+
+    String status;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

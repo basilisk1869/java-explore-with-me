@@ -8,15 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.GetterRepository;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,13 +53,15 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(long userId, long eventId) {
+    public ParticipationRequestDto cancelRequest(long userId, long requestId) {
         User requester = getterRepository.getUser(userId);
-        Event event = getterRepository.getEvent(eventId);
-        Request request = requestRepository.findByRequesterAndEvent(requester, event)
-            .orElseThrow(() -> {
-                throw new NotFoundException("user is not found");
-            });
-        return modelMapper.map(request, ParticipationRequestDto.class);
+        Request request = getterRepository.getRequest(requestId);
+        if (Objects.equals(request.getRequester(), requester)) {
+            request.setStatus(RequestStatus.CANCELED);
+            requestRepository.save(request);
+            return  modelMapper.map(request, ParticipationRequestDto.class);
+        } else {
+            throw new AccessDeniedException("user has no access for this request");
+        }
     }
 }
