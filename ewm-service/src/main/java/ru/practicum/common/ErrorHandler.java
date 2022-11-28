@@ -5,66 +5,49 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.NotFoundException;
-
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleAccessDenied(final AccessDeniedException exception) {
+    public ResponseEntity<ApiError> handleAccessDenied(final AccessDeniedException exception) {
         logException(exception);
-        return exception.getMessage();
+        return makeApiError(HttpStatus.FORBIDDEN, exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ApiError> handleAlreadyExists(final AlreadyExistsException exception) {
         logException(exception);
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiError.builder()
-                .status(HttpStatus.CONFLICT.toString())
-                .message(exception.getMessage())
-                .build());
+        return makeApiError(HttpStatus.CONFLICT, exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleNotFound(final NotFoundException exception) {
+    public ResponseEntity<ApiError> handleNotFound(final NotFoundException exception) {
         logException(exception);
-        return exception.getMessage();
+        return makeApiError(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleIllegalArgument(final IllegalArgumentException exception) {
+    public ResponseEntity<ApiError> handleIllegalArgument(final IllegalArgumentException exception) {
         logException(exception);
-        if (exception.getMessage() != null) {
-            return Map.of("error", exception.getMessage());
-        } else {
-            return Map.of();
-        }
+        return makeApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleException(final HttpMediaTypeNotAcceptableException exception) {
-        exception.printStackTrace();
+    public ResponseEntity<ApiError> handleException(final HttpMediaTypeNotAcceptableException exception) {
         logException(exception);
-        return exception.getMessage();
+        return makeApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleException(final RuntimeException exception) {
+    public ResponseEntity<ApiError> handleException(final RuntimeException exception) {
         logException(exception);
-        return exception.getMessage();
+        return makeApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
     private void logException(final Exception exception) {
@@ -72,6 +55,13 @@ public class ErrorHandler {
             log.error(exception.getMessage());
         }
         exception.printStackTrace();
+    }
+
+    private ResponseEntity<ApiError> makeApiError(HttpStatus httpStatus, String message) {
+        return ResponseEntity.status(httpStatus).body(ApiError.builder()
+                .status(httpStatus.toString())
+                .message(message)
+                .build());
     }
 
 }
