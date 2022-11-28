@@ -43,7 +43,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String>  handleIllegalArgument(final IllegalArgumentException exception) {
+    public Map<String, String> handleIllegalArgument(final IllegalArgumentException exception) {
         logException(exception);
         if (exception.getMessage() != null) {
             return Map.of("error", exception.getMessage());

@@ -3,7 +3,6 @@ package ru.practicum.event.service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,8 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventSort;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.EventSpecification;
+import ru.practicum.request.model.RequestStatus;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     GetterRepository getterRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    RequestRepository requestRepository;
 
     @Override
     public List<EventShortDto> getEvents(String text, List<Integer> categoryIds, Boolean paid,
@@ -58,10 +59,10 @@ public class PublicEventServiceImpl implements PublicEventService {
             }
         }
         DataRange<User> dataRange = new DataRange<>(from, size, pageSort);
-        List<Event> qwe = eventRepository.findAll();
         return eventRepository.findAll(
                 EventSpecification.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable),
                 dataRange.getPageable()).stream()
+            .filter(event -> requestRepository.countByEventAndStatus(event, RequestStatus.CONFIRMED) < event.getParticipantLimit())
             .map(getterRepository::mapEventToShortDto)
             .collect(Collectors.toList());
     }

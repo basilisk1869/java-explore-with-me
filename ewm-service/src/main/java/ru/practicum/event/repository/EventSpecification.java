@@ -29,27 +29,24 @@ public class EventSpecification {
         Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable) {
         final String preparedText;
         if (text != null) {
-            preparedText = "%" + text + "%";
+            preparedText = "%" + text.toUpperCase() + "%";
         } else {
             preparedText = null;
         }
         return (root, query, builder) -> builder.and(
-            /*onlyAvailable == null ?*/ builder.isTrue(builder.literal(true))/* :
-                builder.lessThan(root.get("participantLimit"), root.get("participantLimit"))*/,
+            preparedText == null ? builder.isTrue(builder.literal(true)) :
+                builder.or(
+                    builder.like(builder.upper(root.get("annotation")), preparedText),
+                    builder.like(builder.upper(root.get("description")), preparedText)),
             builder.and(
-                preparedText == null ? builder.isTrue(builder.literal(true)) :
-                    builder.or(
-                        builder.like(builder.upper(root.get("annotation")), preparedText),
-                        builder.like(builder.upper(root.get("description")), preparedText)),
+                categories.size() == 0 ? builder.isTrue(builder.literal(true))
+                        : root.<Category>get("category").in(categories),
                 builder.and(
-                    /*categories.size() == 0 ? */builder.isTrue(builder.literal(true))/*
-                            : root.<Category>get("category").in(categories)*/,
-                    builder.and(
-                        paid == null ?  builder.isTrue(builder.literal(true)) : builder.isTrue(root.get("paid")),
-                        rangeStart == null && rangeEnd == null ?
-                            builder.greaterThanOrEqualTo(root.get("eventDate"), LocalDateTime.now()) :
-                            builder.and(
+                    paid == null ? builder.isTrue(builder.literal(true)) : builder.equal(root.get("paid"), paid),
+                    rangeStart == null && rangeEnd == null ?
+                            builder.greaterThanOrEqualTo(root.get("eventDate"), LocalDateTime.now())
+                            : builder.and(
                                 rangeStart == null ? builder.isTrue(builder.literal(true)) : builder.greaterThanOrEqualTo(root.get("eventDate"), rangeStart),
-                                rangeEnd == null ?  builder.isTrue(builder.literal(true)) : builder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd))))));
+                                rangeEnd == null ?  builder.isTrue(builder.literal(true)) : builder.lessThanOrEqualTo(root.get("eventDate"), rangeEnd)))));
     }
 }

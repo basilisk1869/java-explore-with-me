@@ -5,11 +5,12 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.category.model.Category;
 import ru.practicum.location.model.Location;
+import ru.practicum.request.model.Request;
 import ru.practicum.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -62,6 +63,9 @@ public class Event {
     @JoinTable(name = "event_compilations",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "compilation_id"))
-    Set<Event> compilations;
+    List<Event> compilations;
 
+    @OneToMany
+    @JoinColumn(name = "event_id")
+    List<Request> requests;
 }
