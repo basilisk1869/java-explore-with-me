@@ -11,6 +11,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.CommonRepository;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.exception.AlreadyExistsException;
 
 import java.util.Objects;
@@ -62,6 +63,10 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     @Override
     public void deleteCategory(long catId) {
         Category category = commonRepository.getCategory(catId);
+        // с категорией не должно быть связано ни одного события
+        if (category.getEvents().size() > 0) {
+            throw new AccessDeniedException("cannot delete category with events");
+        }
         categoryRepository.delete(category);
     }
 

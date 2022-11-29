@@ -29,6 +29,7 @@ import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,12 +81,17 @@ public class UserEventServiceImpl implements UserEventService {
         if (!event.getState().equals(EventState.CANCELED) && !event.getState().equals(EventState.PENDING)) {
             throw new AccessDeniedException("only canceled or pending events can be changed");
         }
+        // дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента
+        if (updateEventRequest.getEventDate() != null
+                && updateEventRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new AccessDeniedException("event date is too early");
+        }
         // если редактируется отменённое событие, то оно автоматически переходит в состояние ожидания модерации
-        if ()
-
-
-//
-//        modelMapper.map(updateEventRequest, event);
+        if (event.getState().equals(EventState.CANCELED)) {
+            event.setState(EventState.PENDING);
+        }
+        modelMapper.map(updateEventRequest, event);
+        eventRepository.save(event);
         return commonRepository.mapEventToFullDto(event);
     }
 
@@ -93,6 +99,9 @@ public class UserEventServiceImpl implements UserEventService {
     public EventFullDto postEvent(long userId, NewEventDto newEventDto) {
         User user = commonRepository.getUser(userId);
         Category category = commonRepository.getCategory(newEventDto.getCategory());
+        if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new AccessDeniedException("event date is too early");
+        }
         Location location = modelMapper.map(newEventDto.getLocation(), Location.class);
         locationRepository.save(location);
         Event event = modelMapper.map(newEventDto, Event.class);
@@ -134,11 +143,27 @@ public class UserEventServiceImpl implements UserEventService {
         Event event = commonRepository.getEventByUser(userId, eventId);
         Request request = commonRepository.getRequest(reqId);
         if (request.getEvent().equals(event)) {
+            // нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие
+            if (event.getParticipantLimit() > 0
+                    && event.getParticipantLimit() == commonRepository.getConfirmedRequests(event)) {
+                throw new AccessDeniedException("participation limit is reached");
+            }
             request.setStatus(RequestStatus.CONFIRMED);
             requestRepository.save(request);
+            // если при подтверждении данной заявки, лимит заявок для события исчерпан,
+            // то все неподтверждённые заявки необходимо отклонить
+            if (event.getParticipantLimit() > 0
+                    && event.getParticipantLimit() == commonRepository.getConfirmedRequests(event)) {
+                requestRepository.findAllByEvent(event).stream()
+                        .filter(anotherRequest -> anotherRequest.getStatus().equals(RequestStatus.PENDING))
+                        .forEach(anotherRequest -> {
+                            anotherRequest.setStatus(RequestStatus.CANCELED);
+                            requestRepository.save(anotherRequest);
+                        });
+            }
             return modelMapper.map(request, ParticipationRequestDto.class);
         } else {
-            throw new AccessDeniedException("request not for this event");
+            throw new AccessDeniedException("request is not for this event");
         }
     }
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.CommonRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventState;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.model.Request;
@@ -45,7 +46,30 @@ public class UserRequestServiceImpl implements UserRequestService {
     public ParticipationRequestDto postRequest(long userId, long eventId) {
         User requester = commonRepository.getUser(userId);
         Event event = commonRepository.getEvent(eventId);
+        // нельзя добавить повторный запрос
+        if (requestRepository.findByRequesterAndEvent(requester, event).isPresent()) {
+            throw new AccessDeniedException("request is already exists");
+        }
+        // инициатор события не может добавить запрос на участие в своём событии
+        if (requester.equals(event.getInitiator())) {
+            throw new AccessDeniedException("user is event initiator");
+        }
+        // нельзя участвовать в неопубликованном событии
+        if (!event.getState().equals(EventState.PUBLISHED)) {
+            throw new AccessDeniedException("cannot participate in unpublished event");
+        }
         Request request = new Request();
+        // если количество участников не ограничено
+        if (event.getParticipantLimit() == 0) {
+            request.setStatus(RequestStatus.CONFIRMED);
+        } else if (!event.getRequestModeration()) {
+            // усли подтверждения не требуется
+            if (commonRepository.getConfirmedRequests(event) < event.getParticipantLimit()) {
+                request.setStatus(RequestStatus.CONFIRMED);
+            } else { // если у события достигнут лимит запросов на участие - необходимо вернуть ошибку
+                throw new AccessDeniedException("participation limit is reached");
+            }
+        }
         request.setRequester(requester);
         request.setEvent(event);
         requestRepository.save(request);

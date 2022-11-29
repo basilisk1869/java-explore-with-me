@@ -30,7 +30,7 @@ public class NewEventDto {
     @NotNull @Length(min = 20, max = 7000)
     String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     @NotNull

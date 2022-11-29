@@ -100,20 +100,22 @@ public class CommonRepository {
         });
     }
 
+    public long getConfirmedRequests(Event event) {
+        return event.getRequests() == null ? 0L : event.getRequests().stream()
+                .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
+                .count();
+    }
+
     public EventFullDto mapEventToFullDto(Event event) {
         EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
-        eventFullDto.setConfirmedRequests(event.getRequests() == null ? 0L : event.getRequests().stream()
-                .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
-                .count());
+        eventFullDto.setConfirmedRequests(getConfirmedRequests(event));
         eventFullDto.setViews(0L);
         return eventFullDto;
     }
 
     public EventShortDto mapEventToShortDto(Event event) {
         EventShortDto eventShortDto = modelMapper.map(event, EventShortDto.class);
-        eventShortDto.setConfirmedRequests(event.getRequests() == null ? 0L : event.getRequests().stream()
-                .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
-                .count());
+        eventShortDto.setConfirmedRequests(getConfirmedRequests(event));
         eventShortDto.setViews(0L);
         return eventShortDto;
     }

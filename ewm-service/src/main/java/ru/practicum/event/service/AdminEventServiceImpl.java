@@ -18,6 +18,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.QEvent;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.request.model.QRequest;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.user.model.User;
@@ -108,6 +109,14 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public EventFullDto publishEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
+        // дата начала события должна быть не ранее чем за час от даты публикации
+        if (event.getEventDate().isBefore(LocalDateTime.now())) {
+            throw new AccessDeniedException("event is published too late");
+        }
+        // событие должно быть в состоянии ожидания публикации
+        if (!event.getState().equals(EventState.PENDING)) {
+            throw new AccessDeniedException("event state should be pending");
+        }
         event.setState(EventState.PUBLISHED);
         event.setPublishedOn(LocalDateTime.now());
         eventRepository.save(event);
@@ -117,6 +126,10 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public EventFullDto rejectEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
+        // событие не должно быть опубликовано
+        if (event.getState().equals(EventState.PUBLISHED)) {
+            throw new AccessDeniedException("cannot reject published event");
+        }
         event.setState(EventState.CANCELED);
         eventRepository.save(event);
         return commonRepository.mapEventToFullDto(event);

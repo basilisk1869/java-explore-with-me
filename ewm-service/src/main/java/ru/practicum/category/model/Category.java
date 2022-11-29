@@ -3,8 +3,10 @@ package ru.practicum.category.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.event.model.Event;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -22,4 +24,7 @@ public class Category {
     @Column(unique = true)
     String name;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    List<Event> events;
 }
