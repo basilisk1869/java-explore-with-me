@@ -86,14 +86,18 @@ public class GetterRepository {
 
   public EventFullDto mapEventToFullDto(Event event) {
     EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
-    eventFullDto.setConfirmedRequests((int)requestRepository.countByEventAndStatus(event, RequestStatus.CONFIRMED));
+    eventFullDto.setConfirmedRequests(event.getRequests().stream()
+            .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
+            .count());
     eventFullDto.setViews(0L);
     return eventFullDto;
   }
 
   public EventShortDto mapEventToShortDto(Event event) {
     EventShortDto eventShortDto = modelMapper.map(event, EventShortDto.class);
-    eventShortDto.setConfirmedRequests((int)requestRepository.countByEventAndStatus(event, RequestStatus.CONFIRMED));
+    eventShortDto.setConfirmedRequests(event.getRequests().stream()
+            .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
+            .count());
     eventShortDto.setViews(0L);
     return eventShortDto;
   }
