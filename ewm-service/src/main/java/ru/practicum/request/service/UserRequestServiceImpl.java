@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.GetterRepository;
+import ru.practicum.common.CommonRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -31,11 +31,11 @@ public class UserRequestServiceImpl implements UserRequestService {
     ModelMapper modelMapper;
 
     @Autowired
-    GetterRepository getterRepository;
+    CommonRepository commonRepository;
 
     @Override
     public List<ParticipationRequestDto> getRequests(long userId) {
-        User requester = getterRepository.getUser(userId);
+        User requester = commonRepository.getUser(userId);
         return requestRepository.findAllByRequester(requester).stream()
                 .map(request -> modelMapper.map(request, ParticipationRequestDto.class))
                 .collect(Collectors.toList());
@@ -43,8 +43,8 @@ public class UserRequestServiceImpl implements UserRequestService {
 
     @Override
     public ParticipationRequestDto postRequest(long userId, long eventId) {
-        User requester = getterRepository.getUser(userId);
-        Event event = getterRepository.getEvent(eventId);
+        User requester = commonRepository.getUser(userId);
+        Event event = commonRepository.getEvent(eventId);
         Request request = new Request();
         request.setRequester(requester);
         request.setEvent(event);
@@ -54,8 +54,8 @@ public class UserRequestServiceImpl implements UserRequestService {
 
     @Override
     public ParticipationRequestDto cancelRequest(long userId, long requestId) {
-        User requester = getterRepository.getUser(userId);
-        Request request = getterRepository.getRequest(requestId);
+        User requester = commonRepository.getUser(userId);
+        Request request = commonRepository.getRequest(requestId);
         if (Objects.equals(request.getRequester(), requester)) {
             request.setStatus(RequestStatus.CANCELED);
             requestRepository.save(request);

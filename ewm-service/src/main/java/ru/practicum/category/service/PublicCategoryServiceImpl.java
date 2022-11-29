@@ -11,8 +11,7 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.DataRange;
-import ru.practicum.common.GetterRepository;
-import ru.practicum.user.model.User;
+import ru.practicum.common.CommonRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,22 +25,22 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
     CategoryRepository categoryRepository;
 
     @Autowired
-    GetterRepository getterRepository;
+    CommonRepository commonRepository;
 
     @Autowired
     ModelMapper modelMapper;
 
     @Override
     public List<CategoryDto> getCategories(Integer from, Integer size) {
-        DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return categoryRepository.findAll(dataRange.getPageable()).stream()
+        DataRange<Category> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        return dataRange.trimPage(categoryRepository.findAll(dataRange.getPageable()).getContent()).stream()
             .map(category -> modelMapper.map(category, CategoryDto.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public CategoryDto getCategory(long catId) {
-        Category category = getterRepository.getCategory(catId);
+        Category category = commonRepository.getCategory(catId);
         return modelMapper.map(category, CategoryDto.class);
     }
 }

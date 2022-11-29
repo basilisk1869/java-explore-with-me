@@ -10,7 +10,7 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.common.GetterRepository;
+import ru.practicum.common.CommonRepository;
 import ru.practicum.exception.AlreadyExistsException;
 
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     CategoryRepository categoryRepository;
 
     @Autowired
-    GetterRepository getterRepository;
+    CommonRepository commonRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -61,7 +61,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public void deleteCategory(long catId) {
-        Category category = getterRepository.getCategory(catId);
+        Category category = commonRepository.getCategory(catId);
         categoryRepository.delete(category);
     }
 

@@ -14,12 +14,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.practicum.category.model.Category;
-import ru.practicum.common.GetterRepository;
+import ru.practicum.common.CommonRepository;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventSort;
+import ru.practicum.event.model.EventState;
 import ru.practicum.event.model.QEvent;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.request.model.QRequest;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.stats.StatsClient;
@@ -43,7 +45,7 @@ import static ru.practicum.event.model.EventSort.VIEWS;
 public class PublicEventServiceImpl implements PublicEventService {
 
     @Autowired
-    GetterRepository getterRepository;
+    CommonRepository commonRepository;
 
     @Autowired
     EntityManager entityManager;
@@ -64,7 +66,8 @@ public class PublicEventServiceImpl implements PublicEventService {
         JPAQuery<Tuple> jpaQuery = jpaQueryFactory.select(qEvent, qRequest.id.count())
                 .from(qEvent)
                 .leftJoin(qRequest)
-                .on(qRequest.event.eq(qEvent).and(qRequest.status.eq(RequestStatus.CONFIRMED)));
+                .on(qRequest.event.eq(qEvent).and(qRequest.status.eq(RequestStatus.CONFIRMED)))
+                .where(qEvent.state.eq(EventState.PUBLISHED));
         // text
         if (text != null) {
             String preparedText = "%" + text.toUpperCase() + "%";
@@ -74,7 +77,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         // categoryIds
         if (categoryIds != null) {
             List<Category> categories = categoryIds.stream()
-                    .map(getterRepository::getCategory)
+                    .map(commonRepository::getCategory)
                     .collect(Collectors.toList());
             jpaQuery.where(qEvent.category.in(categories));
         }
@@ -164,7 +167,11 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     @Override
     public EventFullDto getEvent(long eventId) {
-        Event event = getterRepository.getEvent(eventId);
-        return getterRepository.mapEventToFullDto(event);
+        Event event = commonRepository.getEvent(eventId);
+        if (event.getState().equals(EventState.PUBLISHED)) {
+            return commonRepository.mapEventToFullDto(event);
+        } else {
+            throw new AccessDeniedException("access to this event is forbidden");
+        }
     }
 }
