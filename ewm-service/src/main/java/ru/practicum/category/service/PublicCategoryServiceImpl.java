@@ -33,7 +33,8 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
     @Override
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         DataRange<Category> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return dataRange.trimPage(categoryRepository.findAll(dataRange.getPageable()).getContent()).stream()
+        List<Category> categories = categoryRepository.findAll(dataRange.getPageable()).getContent();
+        return dataRange.trimPage(categories).stream()
             .map(category -> modelMapper.map(category, CategoryDto.class))
             .collect(Collectors.toList());
     }

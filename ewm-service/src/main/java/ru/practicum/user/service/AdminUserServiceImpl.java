@@ -35,7 +35,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return dataRange.trimPage(userRepository.findAll(dataRange.getPageable()).getContent()).stream()
+        List<User> users = userRepository.findAll(dataRange.getPageable()).getContent();
+        return dataRange.trimPage(users).stream()
                 .filter(user -> (ids.size() == 0 || ids.contains(user.getId())))
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
