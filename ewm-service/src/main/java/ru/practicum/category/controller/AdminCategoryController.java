@@ -11,6 +11,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.service.AdminCategoryService;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -25,7 +26,7 @@ public class AdminCategoryController {
     @PatchMapping
     CategoryDto patchCategory(@RequestBody @Valid CategoryDto categoryDto) {
         log.info("patchCategory " + categoryDto);
-        return adminCategoryService.patchCategory(categoryDto);
+        return adminCategoryService.patchCategory(Optional.of(categoryDto));
     }
 
     @PostMapping

@@ -32,9 +32,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     ModelMapper modelMapper;
 
     @Override
-    public CategoryDto patchCategory(CategoryDto categoryDto) {
-        Optional<Category> categoryByName = categoryRepository.findByName(categoryDto.getName());
-        Optional<Category> category = categoryRepository.findById(categoryDto.getId());
+    public CategoryDto patchCategory(Optional<CategoryDto> categoryDto) {
+        if (categoryDto.isEmpty()) {
+            throw new IllegalArgumentException("CategoryDto is null");
+        }
+        Optional<Category> categoryByName = categoryRepository.findByName(categoryDto.get().getName());
+        Optional<Category> category = categoryRepository.findById(categoryDto.get().getId());
         if (category.isPresent()) {
             if (categoryByName.isPresent() && !Objects.equals(categoryByName.get(), category.get())) {
                 throw new AlreadyExistsException("category is already exists");
