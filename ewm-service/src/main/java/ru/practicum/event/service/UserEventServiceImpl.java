@@ -1,8 +1,5 @@
 package ru.practicum.event.service;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,19 +13,16 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventRequest;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
-import ru.practicum.event.model.QEvent;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.model.QRequest;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,25 +47,10 @@ public class UserEventServiceImpl implements UserEventService {
     @Autowired
     RequestRepository requestRepository;
 
-    @Autowired
-    EntityManager entityManager;
-
     @Override
     public List<EventFullDto> getEvents(long userId, Integer from, Integer size) {
         User initiator = commonRepository.getUser(userId);
-        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
-        QEvent qEvent = QEvent.event;
-        QRequest qRequest = QRequest.request;
-        JPAQuery<Tuple> jpaQuery = jpaQueryFactory.select(qEvent, qRequest.id.count())
-                .from(qEvent)
-                .leftJoin(qRequest)
-                .on(qRequest.event.eq(qEvent).and(qRequest.status.eq(RequestStatus.CONFIRMED)))
-                .where(qEvent.initiator.eq(initiator))
-                .groupBy(qEvent.id)
-                .orderBy(qEvent.id.asc())
-                .offset(from)
-                .limit(size);
-        return commonRepository.getEventsFromQuery(jpaQuery, qEvent, qRequest);
+        return eventRepository.getEvents(initiator, from, size);
     }
 
     @Override

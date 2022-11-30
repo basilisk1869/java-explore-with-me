@@ -6,7 +6,7 @@ import ru.practicum.user.model.User;
 
 import java.util.List;
 
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends JpaRepository<Event, Long>, CustomEventRepository {
 
     List<Event> findAllByInitiator(User initiator);
 
