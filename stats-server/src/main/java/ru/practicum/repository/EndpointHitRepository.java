@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.model.EndpointHit;
 
 @Repository
-public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long> {
+public interface EndpointHitRepository extends JpaRepository<EndpointHit, Long>, CustomEndpointHitRepository {
 }
