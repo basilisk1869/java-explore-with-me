@@ -12,10 +12,9 @@ import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.NotFoundException;
-
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,14 +28,15 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     CommonRepository commonRepository;
 
     @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
     ModelMapper modelMapper;
 
     @Override
     public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = modelMapper.map(newCompilationDto, Compilation.class);
-        compilation.setEvents(newCompilationDto.getEvents().stream()
-                .map(commonRepository::getEvent)
-                .collect(Collectors.toList()));
+        compilation.setEvents(eventRepository.findAllById(newCompilationDto.getEvents()));
         compilationRepository.save(compilation);
         return modelMapper.map(compilation, CompilationDto.class);
     }

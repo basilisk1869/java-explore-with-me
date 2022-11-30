@@ -49,4 +49,5 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
         Compilation compilation = commonRepository.getCompilation(compId);
         return modelMapper.map(compilation, CompilationDto.class);
     }
+
 }
