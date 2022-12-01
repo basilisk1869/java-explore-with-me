@@ -1,10 +1,8 @@
 package ru.practicum.error;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,19 +10,18 @@ import java.util.List;
 
 @Data
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ApiError {
 
-    List<String> errors;
+    private List<String> errors;
 
-    String message;
+    private String message;
 
-    String reason;
+    private String reason;
 
-    String status;
+    private String status;
 
     @CreationTimestamp
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 
 }

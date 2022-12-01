@@ -1,8 +1,6 @@
 package ru.practicum.category.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +15,10 @@ import java.util.Optional;
 @Slf4j
 @RequestMapping(path = "/admin/categories")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCategoryController {
 
     @Autowired
-    AdminCategoryService adminCategoryService;
+    private final AdminCategoryService adminCategoryService;
 
     @PatchMapping
     CategoryDto patchCategory(@RequestBody @Valid CategoryDto categoryDto) {

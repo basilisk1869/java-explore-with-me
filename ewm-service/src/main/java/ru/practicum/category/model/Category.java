@@ -1,8 +1,10 @@
 package ru.practicum.category.model;
 
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.event.model.Event;
 
 import javax.persistence.*;
@@ -10,7 +12,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "categories")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,12 +20,13 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(unique = true)
-    String name;
+    private String name;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    List<Event> events;
+    private List<Event> events;
+
 }

@@ -1,8 +1,10 @@
 package ru.practicum.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.location.dto.LocationDto;
 
@@ -13,28 +15,28 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdminUpdateEventRequest {
 
-  @Length(min = 20, max = 2000)
-  String annotation;
+    @Length(min = 20, max = 2000)
+    private String annotation;
 
-  Long category;
+    private Long category;
 
-  @Length(min = 20, max = 7000)
-  String description;
+    @Length(min = 20, max = 7000)
+    private String description;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  LocalDateTime eventDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
 
-  LocationDto location;
+    private LocationDto location;
 
-  Boolean paid;
+    private Boolean paid;
 
-  Integer participantLimit;
+    private Integer participantLimit;
 
-  Boolean requestModeration;
+    private Boolean requestModeration;
 
-  @Size(min = 3, max = 120)
-  String title;
+    @Size(min = 3, max = 120)
+    private String title;
+
 }

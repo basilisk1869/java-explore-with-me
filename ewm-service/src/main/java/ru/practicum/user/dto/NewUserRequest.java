@@ -1,7 +1,9 @@
 package ru.practicum.user.dto;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,13 +12,12 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewUserRequest {
 
     @NotBlank @Email
-    String email;
+    private String email;
 
     @NotBlank
-    String name;
+    private String name;
 
 }

@@ -1,8 +1,6 @@
 package ru.practicum.compilation.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.compilation.dto.CompilationDto;
@@ -13,11 +11,10 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/compilations")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicCompilationController {
 
     @Autowired
-    PublicCompilationService publicCompilationService;
+    private final PublicCompilationService publicCompilationService;
 
     @GetMapping
     List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,

@@ -1,14 +1,12 @@
 package ru.practicum.user.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.DataRange;
 import ru.practicum.common.CommonRepository;
+import ru.practicum.common.DataRange;
 import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -20,17 +18,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserServiceImpl implements AdminUserService {
 
     @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {

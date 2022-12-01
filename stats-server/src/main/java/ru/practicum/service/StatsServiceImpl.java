@@ -1,5 +1,6 @@
 package ru.practicum.service;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class StatsServiceImpl implements StatsService {
 
     @Autowired
-    EndpointHitRepository endpointHitRepository;
+    private final EndpointHitRepository endpointHitRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public void postEndpointHit(EndpointHitDto endpointHitDto) {

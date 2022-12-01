@@ -1,5 +1,6 @@
 package ru.practicum.common;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,29 +23,30 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class CommonRepository {
 
     @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    CompilationRepository compilationRepository;
+    private final CompilationRepository compilationRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    StatsClient statsClient;
+    private final StatsClient statsClient;
 
     public Category getCategory(long catId) {
         return categoryRepository.findById(catId).orElseThrow(() -> {

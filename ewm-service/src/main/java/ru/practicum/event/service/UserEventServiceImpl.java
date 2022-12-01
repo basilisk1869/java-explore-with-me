@@ -1,8 +1,6 @@
 package ru.practicum.event.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,23 +27,22 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserEventServiceImpl implements UserEventService {
 
     @Autowired
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
     @Autowired
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<EventFullDto> getEvents(long userId, Integer from, Integer size) {

@@ -1,8 +1,6 @@
 package ru.practicum.compilation.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,20 +16,19 @@ import ru.practicum.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Autowired
-    CompilationRepository compilationRepository;
+    private final CompilationRepository compilationRepository;
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {

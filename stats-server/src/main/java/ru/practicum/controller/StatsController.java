@@ -1,8 +1,6 @@
 package ru.practicum.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,11 +16,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsController {
 
     @Autowired
-    StatsService statsService;
+    private final StatsService statsService;
 
     @PostMapping(path = "/hit")
     void postEndpointHit(@RequestBody @Valid EndpointHitDto endpointHitDto) {

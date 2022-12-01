@@ -1,8 +1,6 @@
 package ru.practicum.request.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,17 +20,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserRequestServiceImpl implements UserRequestService {
 
     @Autowired
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Override
     public List<ParticipationRequestDto> getRequests(long userId) {

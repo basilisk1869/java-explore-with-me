@@ -1,8 +1,6 @@
 package ru.practicum.category.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +13,10 @@ import java.util.List;
 @RequestMapping(path = "/categories")
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicCategoryController {
 
     @Autowired
-    PublicCategoryService publicCategoryService;
+    private final PublicCategoryService publicCategoryService;
 
     @GetMapping
     List<CategoryDto> getCategories(@RequestParam(required = false, defaultValue = "0") Integer from,

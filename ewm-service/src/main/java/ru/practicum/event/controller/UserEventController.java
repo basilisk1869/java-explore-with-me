@@ -1,8 +1,6 @@
 package ru.practicum.event.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +17,10 @@ import java.util.List;
 @RequestMapping(path = "/users/{userId}/events")
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserEventController {
 
     @Autowired
-    UserEventService userEventService;
+    private final UserEventService userEventService;
 
     @GetMapping
     List<EventFullDto> getEvents(@PathVariable long userId,

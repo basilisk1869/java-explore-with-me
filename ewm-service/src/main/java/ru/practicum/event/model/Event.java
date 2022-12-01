@@ -1,7 +1,9 @@
 package ru.practicum.event.model;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.category.model.Category;
 import ru.practicum.location.model.Location;
@@ -14,7 +16,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "events")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,49 +24,50 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String annotation;
+    private String annotation;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
-    Category category;
+    private Category category;
 
     @CreationTimestamp
-    LocalDateTime createdOn;
+    private LocalDateTime createdOn;
 
-    String description;
+    private String description;
 
-    LocalDateTime eventDate;
+    private LocalDateTime eventDate;
 
     @ManyToOne
     @JoinColumn(name = "initiator_id")
-    User initiator;
+    private User initiator;
 
     @OneToOne
     @JoinColumn(name = "location_id")
-    Location location;
+    private Location location;
 
-    Boolean paid = false;
+    private Boolean paid = false;
 
-    Integer participantLimit = 0;
+    private Integer participantLimit = 0;
 
-    LocalDateTime publishedOn;
+    private LocalDateTime publishedOn;
 
-    Boolean requestModeration;
+    private Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
-    EventState state = EventState.PENDING;
+    private EventState state = EventState.PENDING;
 
-    String title;
+    private String title;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "event_compilations",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "compilation_id"))
-    List<Event> compilations;
+    private List<Event> compilations;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    List<Request> requests;
+    private List<Request> requests;
+
 }

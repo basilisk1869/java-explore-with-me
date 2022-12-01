@@ -1,8 +1,6 @@
 package ru.practicum.event.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,11 +17,10 @@ import java.util.List;
 @RequestMapping(path = "/admin/events")
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminEventController {
 
     @Autowired
-    AdminEventService adminEventService;
+    private final AdminEventService adminEventService;
 
     @GetMapping
     List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,

@@ -1,8 +1,6 @@
 package ru.practicum.event.service;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,17 +24,16 @@ import static ru.practicum.event.model.EventSort.VIEWS;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PublicEventServiceImpl implements PublicEventService {
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    StatsClient statsClient;
+    private final StatsClient statsClient;
 
     @Autowired
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
     @Override
     public List<EventShortDto> getEvents(String text, List<Long> categoryIds, Boolean paid,

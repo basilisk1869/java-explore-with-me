@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.model.QEndpointHit;
@@ -12,10 +13,11 @@ import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class CustomEndpointHitRepositoryImpl implements CustomEndpointHitRepository {
 
     @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Override
     public List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {

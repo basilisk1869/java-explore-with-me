@@ -1,8 +1,5 @@
 package ru.practicum.stats;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -27,14 +24,11 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StatsClient {
 
-    RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
-    ObjectMapper objectMapper;
-
-    public StatsClient(@Autowired RestTemplateBuilder builder, @Autowired ObjectMapper objectMapper) {
+    public StatsClient(@Autowired RestTemplateBuilder builder) {
         Optional<Properties> properties = getApplicationProperties();
         String statsServerUrl = "http://stats-server:9090";
         if (properties.isPresent()) {
@@ -44,7 +38,6 @@ public class StatsClient {
                 .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUrl))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
-        this.objectMapper = objectMapper;
     }
 
     public ResponseEntity<Object> postEndpointHit(EndpointHitDto endpointHitDto) {
@@ -73,7 +66,7 @@ public class StatsClient {
                     .collect(Collectors.toList());
             try {
                 ResponseEntity<List<ViewStats>> viewStats = getUrlViews(rangeStart, rangeEnd, uris, false);
-                if (viewStats.getStatusCode() == HttpStatus.OK) {
+                if ((viewStats.getStatusCode() == HttpStatus.OK) && (viewStats.getBody() != null)) {
                     Map<String, ViewStats> statsMap = viewStats.getBody().stream()
                             .collect(Collectors.toMap(ViewStats::getUri, Function.identity()));
                     events.forEach(event -> {
@@ -97,7 +90,7 @@ public class StatsClient {
                     .collect(Collectors.toList());
             try {
                 ResponseEntity<List<ViewStats>> viewStats = getUrlViews(rangeStart, rangeEnd, uris, false);
-                if (viewStats.getStatusCode() == HttpStatus.OK) {
+                if ((viewStats.getStatusCode() == HttpStatus.OK) && (viewStats.getBody() != null)) {
                     Map<String, ViewStats> statsMap = viewStats.getBody().stream()
                             .collect(Collectors.toMap(ViewStats::getUri, Function.identity()));
                     events.forEach(event -> {

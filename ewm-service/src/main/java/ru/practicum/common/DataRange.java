@@ -1,9 +1,7 @@
 package ru.practicum.common;
 
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,14 +10,13 @@ import java.util.List;
 
 @Data
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DataRange<T> {
 
-    int from;
+    private final int from;
 
-    int size;
+    private final int size;
 
-    Sort sort;
+    private final Sort sort;
 
     public boolean isValid() {
         if (from < 0) {

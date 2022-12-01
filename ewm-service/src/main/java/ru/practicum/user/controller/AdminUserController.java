@@ -1,8 +1,6 @@
 package ru.practicum.user.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +15,10 @@ import java.util.List;
 @RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserController {
 
     @Autowired
-    AdminUserService adminUserService;
+    private final AdminUserService adminUserService;
 
     @GetMapping
     List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,

@@ -1,14 +1,15 @@
 package ru.practicum.model;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "endpoint_hits")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,15 +18,15 @@ public class EndpointHit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String app;
+    private String app;
 
-    String uri;
+    private String uri;
 
-    String ip;
+    private String ip;
 
     @Column(name = "ts")
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 
 }

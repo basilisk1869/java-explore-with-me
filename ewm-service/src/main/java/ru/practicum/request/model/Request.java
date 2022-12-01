@@ -1,7 +1,9 @@
 package ru.practicum.request.model;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
@@ -11,7 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "requests")
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,20 +21,20 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @CreationTimestamp
-    LocalDateTime created;
+    private LocalDateTime created;
 
     @ManyToOne
     @JoinColumn(name = "event_id")
-    Event event;
+    private Event event;
 
     @ManyToOne
     @JoinColumn(name = "requester_id")
-    User requester;
+    private User requester;
 
     @Enumerated(EnumType.STRING)
-    RequestStatus status = RequestStatus.PENDING;
+    private RequestStatus status = RequestStatus.PENDING;
 
 }

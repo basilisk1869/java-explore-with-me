@@ -1,11 +1,9 @@
 package ru.practicum.location.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,12 +11,12 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationDto {
 
     @NotNull
-    Float lat;
+    private Float lat;
 
     @NotNull
-    Float lon;
+    private Float lon;
+
 }

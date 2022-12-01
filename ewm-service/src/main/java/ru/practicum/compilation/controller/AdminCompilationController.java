@@ -1,24 +1,21 @@
 package ru.practicum.compilation.controller;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.compilation.service.AdminCompilationService;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
+import ru.practicum.compilation.service.AdminCompilationService;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminCompilationController {
 
     @Autowired
-    AdminCompilationService adminCompilationService;
+    private final AdminCompilationService adminCompilationService;
 
     @PostMapping
     CompilationDto postCompilation(@RequestBody @Valid NewCompilationDto newCompilationDto) {

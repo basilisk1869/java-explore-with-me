@@ -3,6 +3,7 @@ package ru.practicum.event.repository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.practicum.event.dto.EventFullDto;
@@ -21,13 +22,14 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.EventSort.EVENT_DATE;
 
+@RequiredArgsConstructor
 public class CustomEventRepositoryImpl implements CustomEventRepository {
 
     @Autowired
-    EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<EventFullDto> getEvents(List<Long> userIds, List<String> stateIds, List<Long> categoryIds,
