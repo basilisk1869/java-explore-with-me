@@ -42,12 +42,12 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
             if (categoryByName.isPresent() && !Objects.equals(categoryByName.get(), category.get())) {
                 throw new AlreadyExistsException("category is already exists");
             }
-            modelMapper.map(categoryDto, category.get());
+            modelMapper.map(categoryDto.get(), category.get());
         } else {
             if (categoryByName.isPresent()) {
                 throw new AlreadyExistsException("category is already exists");
             }
-            category = Optional.of(modelMapper.map(categoryDto, Category.class));
+            category = Optional.of(modelMapper.map(categoryDto.get(), Category.class));
         }
         categoryRepository.save(category.get());
         return modelMapper.map(category.get(), CategoryDto.class);
