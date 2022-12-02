@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * Пользователь
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -15,12 +18,20 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * Идентификатор
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Имя
+     */
     private String name;
 
+    /**
+     * Электронная почта
+     */
     @Column(unique = true)
     private String email;
 

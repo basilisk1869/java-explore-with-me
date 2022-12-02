@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.exception.AccessDeniedException;
@@ -14,6 +14,7 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,10 +30,10 @@ public class UserRequestServiceImpl implements UserRequestService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Override
-    public List<ParticipationRequestDto> getRequests(long userId) {
+    public @NotNull List<ParticipationRequestDto> getRequests(long userId) {
         User requester = commonRepository.getUser(userId);
         return requestRepository.findAllByRequester(requester).stream()
                 .map(request -> modelMapper.map(request, ParticipationRequestDto.class))
@@ -40,7 +41,7 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public ParticipationRequestDto postRequest(long userId, long eventId) {
+    public @NotNull ParticipationRequestDto postRequest(long userId, long eventId) {
         User requester = commonRepository.getUser(userId);
         Event event = commonRepository.getEvent(eventId);
         // нельзя добавить повторный запрос
@@ -74,7 +75,7 @@ public class UserRequestServiceImpl implements UserRequestService {
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(long userId, long requestId) {
+    public @NotNull ParticipationRequestDto cancelRequest(long userId, long requestId) {
         User requester = commonRepository.getUser(userId);
         Request request = commonRepository.getRequest(requestId);
         if (Objects.equals(request.getRequester(), requester)) {
@@ -85,4 +86,5 @@ public class UserRequestServiceImpl implements UserRequestService {
             throw new AccessDeniedException("user has no access for this request");
         }
     }
+
 }

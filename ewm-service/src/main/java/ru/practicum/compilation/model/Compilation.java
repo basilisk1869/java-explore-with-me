@@ -10,6 +10,9 @@ import ru.practicum.event.model.Event;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * Подборка событий
+ */
 @Entity
 @Table(name = "compilations")
 @Getter
@@ -18,15 +21,26 @@ import java.util.List;
 @NoArgsConstructor
 public class Compilation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * Идентификатор
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Закреплена ли подборка на главной странице сайта
+     */
     private Boolean pinned;
 
+    /**
+     * Заголовок подборки
+     */
     private String title;
 
-    @ManyToMany
+    /**
+     * Список событий в подборке
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "event_compilations",
         joinColumns = @JoinColumn(name = "compilation_id"),
         inverseJoinColumns = @JoinColumn(name = "event_id"))

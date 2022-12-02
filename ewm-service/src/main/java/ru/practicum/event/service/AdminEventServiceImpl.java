@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.event.dto.AdminUpdateEventRequest;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.model.Event;
@@ -14,6 +15,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.stats.StatsClient;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,14 +31,19 @@ public class AdminEventServiceImpl implements AdminEventService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final StatsClient statsClient;
 
     @Override
-    public List<EventFullDto> getEvents(List<Long> userIds, List<String> stateIds, List<Long> categoryIds,
-                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public @NotNull List<EventFullDto> getEvents(@Nullable List<Long> userIds,
+                                                 @Nullable List<String> stateIds,
+                                                 @Nullable List<Long> categoryIds,
+                                                 @Nullable LocalDateTime rangeStart,
+                                                 @Nullable LocalDateTime rangeEnd,
+                                                 int from,
+                                                 int size) {
         List<EventFullDto> events = eventRepository.getEvents(userIds, stateIds, categoryIds, rangeStart, rangeEnd,
                 from, size);
         statsClient.setViewsForEventFullDtoList(events, rangeStart, rangeEnd);
@@ -44,7 +51,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventFullDto putEvent(long eventId, AdminUpdateEventRequest adminUpdateEventRequest) {
+    public @NotNull EventFullDto putEvent(long eventId, @NotNull AdminUpdateEventRequest adminUpdateEventRequest) {
         Event event = commonRepository.getEvent(eventId);
         modelMapper.map(adminUpdateEventRequest, event);
         eventRepository.save(event);
@@ -52,7 +59,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventFullDto publishEvent(long eventId) {
+    public @NotNull EventFullDto publishEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
         // дата начала события должна быть не ранее чем за час от даты публикации
         if (event.getEventDate().isBefore(LocalDateTime.now())) {
@@ -69,7 +76,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     }
 
     @Override
-    public EventFullDto rejectEvent(long eventId) {
+    public @NotNull EventFullDto rejectEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
         // событие не должно быть опубликовано
         if (event.getState().equals(EventState.PUBLISHED)) {

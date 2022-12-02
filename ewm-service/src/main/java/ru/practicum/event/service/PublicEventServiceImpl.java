@@ -3,8 +3,9 @@ package ru.practicum.event.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
@@ -14,6 +15,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.stats.StatsClient;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -27,7 +29,7 @@ import static ru.practicum.event.model.EventSort.VIEWS;
 public class PublicEventServiceImpl implements PublicEventService {
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final StatsClient statsClient;
@@ -36,9 +38,15 @@ public class PublicEventServiceImpl implements PublicEventService {
     private final EventRepository eventRepository;
 
     @Override
-    public List<EventShortDto> getEvents(String text, List<Long> categoryIds, Boolean paid,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
-                                         String sort, Integer from, Integer size) {
+    public @NotNull List<EventShortDto> getEvents(@Nullable String text,
+                                                  @Nullable List<Long> categoryIds,
+                                                  @Nullable Boolean paid,
+                                                  @Nullable LocalDateTime rangeStart,
+                                                  @Nullable LocalDateTime rangeEnd,
+                                                  @Nullable Boolean onlyAvailable,
+                                                  @Nullable String sort,
+                                                  int from,
+                                                  int size) {
         List<EventShortDto> events = eventRepository.getEvents(text, categoryIds, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
         statsClient.setViewsForEventShortDtoList(events, rangeStart, rangeEnd);
@@ -57,7 +65,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     }
 
     @Override
-    public EventFullDto getEvent(long eventId) {
+    public @NotNull EventFullDto getEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
         if (event.getState().equals(EventState.PUBLISHED)) {
             return commonRepository.mapEventToFullDto(event);

@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.EventSort;
@@ -16,6 +17,7 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.user.model.User;
 
 import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,8 +34,13 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<EventFullDto> getEvents(List<Long> userIds, List<String> stateIds, List<Long> categoryIds,
-                                        LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
+    public @NotNull List<EventFullDto> getEvents(@Nullable List<Long> userIds,
+                                          @Nullable List<String> stateIds,
+                                          @Nullable List<Long> categoryIds,
+                                          @Nullable LocalDateTime rangeStart,
+                                          @Nullable LocalDateTime rangeEnd,
+                                          int from,
+                                          int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QEvent qEvent = QEvent.event;
         QRequest qRequest = QRequest.request;
@@ -75,7 +82,9 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
     }
 
     @Override
-    public List<EventFullDto> getEvents(User initiator, Integer from, Integer size) {
+    public @NotNull List<EventFullDto> getEvents(@NotNull User initiator,
+                                                 int from,
+                                                 int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QEvent qEvent = QEvent.event;
         QRequest qRequest = QRequest.request;
@@ -92,9 +101,15 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
     }
 
     @Override
-    public List<EventShortDto> getEvents(String text, List<Long> categoryIds, Boolean paid,
-                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
-                                         String sort, Integer from, Integer size) {
+    public @NotNull List<EventShortDto> getEvents(@Nullable String text,
+                                           @Nullable List<Long> categoryIds,
+                                           @Nullable Boolean paid,
+                                           @Nullable LocalDateTime rangeStart,
+                                           @Nullable LocalDateTime rangeEnd,
+                                           @Nullable Boolean onlyAvailable,
+                                           @Nullable String sort,
+                                           int from,
+                                           int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QEvent qEvent = QEvent.event;
         QRequest qRequest = QRequest.request;

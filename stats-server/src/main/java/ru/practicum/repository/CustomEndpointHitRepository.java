@@ -1,7 +1,9 @@
 package ru.practicum.repository;
 
+import org.springframework.lang.Nullable;
 import ru.practicum.dto.ViewStats;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +17,10 @@ public interface CustomEndpointHitRepository {
      * @param unique Нужно ли учитывать только уникальные посещения
      * @return Список {@link ViewStats}
      */
-    List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
+    @NotNull List<ViewStats> getViewStats(
+            @NotNull LocalDateTime start,
+            @NotNull LocalDateTime end,
+            @Nullable List<String> uris,
+            @Nullable Boolean unique);
 
 }

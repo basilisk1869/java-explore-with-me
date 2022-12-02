@@ -8,10 +8,11 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.exception.AlreadyExistsException;
 
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -23,35 +24,32 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     private final CategoryRepository categoryRepository;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final ModelMapper modelMapper;
 
     @Override
-    public CategoryDto patchCategory(Optional<CategoryDto> categoryDto) {
-        if (categoryDto.isEmpty()) {
-            throw new IllegalArgumentException("CategoryDto is null");
-        }
-        Optional<Category> categoryByName = categoryRepository.findByName(categoryDto.get().getName());
-        Optional<Category> category = categoryRepository.findById(categoryDto.get().getId());
+    public @NotNull CategoryDto patchCategory(@NotNull CategoryDto categoryDto) {
+        Optional<Category> categoryByName = categoryRepository.findByName(categoryDto.getName());
+        Optional<Category> category = categoryRepository.findById(categoryDto.getId());
         if (category.isPresent()) {
             if (categoryByName.isPresent() && !Objects.equals(categoryByName.get(), category.get())) {
                 throw new AlreadyExistsException("category is already exists");
             }
-            modelMapper.map(categoryDto.get(), category.get());
+            modelMapper.map(categoryDto, category.get());
         } else {
             if (categoryByName.isPresent()) {
                 throw new AlreadyExistsException("category is already exists");
             }
-            category = Optional.of(modelMapper.map(categoryDto.get(), Category.class));
+            category = Optional.of(modelMapper.map(categoryDto, Category.class));
         }
         categoryRepository.save(category.get());
         return modelMapper.map(category.get(), CategoryDto.class);
     }
 
     @Override
-    public CategoryDto postCategory(NewCategoryDto newCategoryDto) {
+    public @NotNull CategoryDto postCategory(@NotNull NewCategoryDto newCategoryDto) {
         if (categoryRepository.findByName(newCategoryDto.getName()).isPresent()) {
             throw new AlreadyExistsException("category is already exists");
         }

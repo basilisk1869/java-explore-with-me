@@ -6,6 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,12 +24,19 @@ import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Клиент запроса статистики просмотров
+ */
 @Component
 @Slf4j
 public class StatsClient {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Создание клиента
+     * @param builder
+     */
     public StatsClient(@Autowired RestTemplateBuilder builder) {
         Optional<Properties> properties = getApplicationProperties();
         String statsServerUrl = "http://stats-server:9090";
@@ -40,14 +49,29 @@ public class StatsClient {
                 .build();
     }
 
-    public ResponseEntity<Object> postEndpointHit(EndpointHitDto endpointHitDto) {
+    /**
+     * Отправка данных о просмотре
+     * @param endpointHitDto Данные о просмотре
+     * @return Ответ сервера статистики
+     */
+    public @NotNull ResponseEntity<Object> postEndpointHit(@NotNull EndpointHitDto endpointHitDto) {
         HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitDto, defaultHeaders());
         return restTemplate.exchange("/hit", HttpMethod.POST,
                 requestEntity, Object.class);
     }
 
-    public ResponseEntity<List<ViewStats>> getUrlViews(LocalDateTime start, LocalDateTime end,
-        List<String> uris, Boolean unique) {
+    /**
+     * Запрос данных о просмотрах
+     * @param start Дата и время начала диапазона за который нужно выгрузить статистику
+     * @param end Дата и время конца диапазона за который нужно выгрузить статистику
+     * @param uris Список uri для которых нужно выгрузить статистику
+     * @param unique Нужно ли учитывать только уникальные посещения (только с уникальным ip)
+     * @return Ответ сервера статистики
+     */
+    public @NotNull ResponseEntity<List<ViewStats>> getUrlViews(@NotNull LocalDateTime start,
+                                                                @NotNull LocalDateTime end,
+                                                                @Nullable List<String> uris,
+                                                                @Nullable Boolean unique) {
         Map<String, Object> parameters = Map.of(
             "start", start,
             "end", end,
@@ -58,7 +82,16 @@ public class StatsClient {
             HttpMethod.POST, requestEntity, new ParameterizedTypeReference<List<ViewStats>>(){}, parameters);
     }
 
-    public void setViewsForEventFullDtoList(List<EventFullDto> events, LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+    /**
+     * Добавление данных о просмотрах в полные DTO событий
+     * @param events Полные DTO событий
+     * @param rangeStart Дата и время начала диапазона за который нужно выгрузить статистику
+     * @param rangeEnd Дата и время конца диапазона за который нужно выгрузить статистику
+     */
+    public void setViewsForEventFullDtoList(
+            @NotNull List<EventFullDto> events,
+            @NotNull LocalDateTime rangeStart,
+            @NotNull LocalDateTime rangeEnd) {
         events.forEach(event -> event.setViews(0L));
         if (events.size() > 0 && rangeStart != null && rangeEnd != null) {
             List<String> uris = events.stream()
@@ -82,7 +115,16 @@ public class StatsClient {
         }
     }
 
-    public void setViewsForEventShortDtoList(List<EventShortDto> events, LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+    /**
+     * Добавление данных о просмотрах в сокращенные DTO событий
+     * @param events Сокращенные DTO событий
+     * @param rangeStart Дата и время начала диапазона за который нужно выгрузить статистику
+     * @param rangeEnd Дата и время конца диапазона за который нужно выгрузить статистику
+     */
+    public void setViewsForEventShortDtoList(
+            @NotNull List<EventShortDto> events,
+            @NotNull LocalDateTime rangeStart,
+            @NotNull LocalDateTime rangeEnd) {
         events.forEach(event -> event.setViews(0L));
         if (events.size() > 0 && rangeStart != null && rangeEnd != null) {
             List<String> uris = events.stream()

@@ -8,6 +8,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+/**
+ * Место проведения
+ */
 @Entity
 @Table(name = "locations")
 @Getter
@@ -16,13 +19,21 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class Location {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * Идентификатор
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Широта
+     */
     @NotNull
     private Float lat;
 
+    /**
+     * Долгота
+     */
     @NotNull
     private Float lon;
 

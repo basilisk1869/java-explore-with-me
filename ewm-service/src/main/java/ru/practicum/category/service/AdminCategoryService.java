@@ -3,14 +3,28 @@ package ru.practicum.category.service;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 
-import java.util.Optional;
+import javax.validation.constraints.NotNull;
 
 public interface AdminCategoryService {
 
-    CategoryDto patchCategory(Optional<CategoryDto> categoryDto);
+    /**
+     * Изменение категории
+     * @param categoryDto Новые данные категории
+     * @return Измененные данные категорию
+     */
+    @NotNull CategoryDto patchCategory(@NotNull CategoryDto categoryDto);
 
-    CategoryDto postCategory(NewCategoryDto newCategoryDto);
+    /**
+     * Добавление категории
+     * @param newCategoryDto Новая категория
+     * @return Новые данные категории
+     */
+    @NotNull CategoryDto postCategory(@NotNull NewCategoryDto newCategoryDto);
 
+    /**
+     * Удаление категории
+     * @param catId Идентификатор категории
+     */
     void deleteCategory(long catId);
 
 }

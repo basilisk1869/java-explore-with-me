@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
@@ -14,6 +14,8 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.NotFoundException;
 
+import javax.validation.constraints.NotNull;
+
 @Service
 @RequiredArgsConstructor
 public class AdminCompilationServiceImpl implements AdminCompilationService {
@@ -22,7 +24,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CompilationRepository compilationRepository;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final EventRepository eventRepository;
@@ -31,7 +33,7 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final ModelMapper modelMapper;
 
     @Override
-    public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {
+    public @NotNull CompilationDto postCompilation(@NotNull NewCompilationDto newCompilationDto) {
         Compilation compilation = modelMapper.map(newCompilationDto, Compilation.class);
         compilation.setEvents(eventRepository.findAllById(newCompilationDto.getEvents()));
         compilationRepository.save(compilation);

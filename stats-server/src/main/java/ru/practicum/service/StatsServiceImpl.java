@@ -3,12 +3,14 @@ package ru.practicum.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.EndpointHitRepository;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,7 +31,11 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public List<ViewStats> getViewStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public @NotNull List<ViewStats> getViewStats(
+            @NotNull LocalDateTime start,
+            @NotNull LocalDateTime end,
+            @Nullable List<String> uris,
+            @Nullable Boolean unique) {
         return endpointHitRepository.getViewStats(start, end, uris, unique);
     }
 

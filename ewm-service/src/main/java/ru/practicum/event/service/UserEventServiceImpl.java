@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
-import ru.practicum.common.CommonRepository;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventRequest;
@@ -21,6 +21,7 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class UserEventServiceImpl implements UserEventService {
     private final EventRepository eventRepository;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -45,13 +46,13 @@ public class UserEventServiceImpl implements UserEventService {
     private final RequestRepository requestRepository;
 
     @Override
-    public List<EventFullDto> getEvents(long userId, Integer from, Integer size) {
+    public @NotNull List<EventFullDto> getEvents(long userId, int from, int size) {
         User initiator = commonRepository.getUser(userId);
         return eventRepository.getEvents(initiator, from, size);
     }
 
     @Override
-    public EventFullDto patchEvent(long userId, UpdateEventRequest updateEventRequest) {
+    public @NotNull EventFullDto patchEvent(long userId, @NotNull UpdateEventRequest updateEventRequest) {
         Event event = commonRepository.getEventByUser(userId, updateEventRequest.getEventId());
         // изменить можно только отмененные события или события в состоянии ожидания модерации
         if (!event.getState().equals(EventState.CANCELED) && !event.getState().equals(EventState.PENDING)) {
@@ -72,7 +73,7 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     @Override
-    public EventFullDto postEvent(long userId, NewEventDto newEventDto) {
+    public @NotNull EventFullDto postEvent(long userId, @NotNull NewEventDto newEventDto) {
         User user = commonRepository.getUser(userId);
         Category category = commonRepository.getCategory(newEventDto.getCategory());
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
@@ -89,13 +90,13 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     @Override
-    public EventFullDto getEvent(long userId, long eventId) {
+    public @NotNull EventFullDto getEvent(long userId, long eventId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         return commonRepository.mapEventToFullDto(event);
     }
 
     @Override
-    public EventFullDto cancelEvent(long userId, long eventId) {
+    public @NotNull EventFullDto cancelEvent(long userId, long eventId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         if (event.getState().equals(EventState.PENDING)) {
             event.setState(EventState.CANCELED);
@@ -107,7 +108,7 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getRequests(long userId, long eventId) {
+    public @NotNull List<ParticipationRequestDto> getRequests(long userId, long eventId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         return requestRepository.findAllByEvent(event).stream()
             .map(request -> modelMapper.map(request, ParticipationRequestDto.class))
@@ -115,7 +116,7 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     @Override
-    public ParticipationRequestDto confirmRequest(long userId, long eventId, long reqId) {
+    public @NotNull ParticipationRequestDto confirmRequest(long userId, long eventId, long reqId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         Request request = commonRepository.getRequest(reqId);
         if (request.getEvent().equals(event)) {
@@ -144,7 +145,7 @@ public class UserEventServiceImpl implements UserEventService {
     }
 
     @Override
-    public ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) {
+    public @NotNull ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         Request request = commonRepository.getRequest(reqId);
         if (request.getEvent().equals(event)) {

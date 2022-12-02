@@ -29,7 +29,7 @@ public class PublicEventController {
 
     @GetMapping
     List<EventShortDto> getEvents(@RequestParam(required = false) String text,
-                                  @RequestParam(required = false) List<Long> categories,
+                                  @RequestParam(required = false) List<Long> categoryIds,
                                   @RequestParam(required = false) Boolean paid,
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                   @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
@@ -39,7 +39,7 @@ public class PublicEventController {
                                   @RequestParam(required = false, defaultValue = "10") Integer size,
                                   HttpServletRequest request) {
         log.info("getEvents");
-        List<EventShortDto> result = publicEventService.getEvents(text, categories, paid, rangeStart, rangeEnd,
+        List<EventShortDto> result = publicEventService.getEvents(text, categoryIds, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
         statsClient.postEndpointHit(EndpointHitDto.builder()
                 .app("ewm")

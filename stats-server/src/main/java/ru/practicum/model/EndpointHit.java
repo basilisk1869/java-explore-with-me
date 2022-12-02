@@ -8,6 +8,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Запись о просмотре
+ */
 @Entity
 @Table(name = "endpoint_hits")
 @Getter

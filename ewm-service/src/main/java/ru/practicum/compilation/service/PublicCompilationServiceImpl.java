@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.practicum.common.CommonRepository;
 import ru.practicum.common.DataRange;
+import ru.practicum.common.repository.CommonRepositoryImpl;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,13 +24,13 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     private final CompilationRepository compilationRepository;
 
     @Autowired
-    private final CommonRepository commonRepository;
+    private final CommonRepositoryImpl commonRepository;
 
     @Autowired
     private final ModelMapper modelMapper;
 
     @Override
-    public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
+    public @NotNull List<CompilationDto> getCompilations(@Nullable Boolean pinned, int from, int size) {
         DataRange<Compilation> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
         List<Compilation> result;
         if (pinned != null) {
@@ -42,7 +44,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
     }
 
     @Override
-    public CompilationDto getCompilation(long compId) {
+    public @NotNull CompilationDto getCompilation(long compId) {
         Compilation compilation = commonRepository.getCompilation(compId);
         return modelMapper.map(compilation, CompilationDto.class);
     }
