@@ -16,16 +16,30 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EndpointHit {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /**
+     * Идентификатор записи
+     */
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Идентификатор сервиса для которого записывается информация
+     */
     private String app;
 
+    /**
+     * посещенный путь
+     */
     private String uri;
 
+    /**
+     * IP-адрес пользователя, осуществившего запрос
+     */
     private String ip;
 
+    /**
+     * Дата и время, когда был совершен запрос к эндпоинту
+     */
     @Column(name = "ts")
     private LocalDateTime timestamp;
 
