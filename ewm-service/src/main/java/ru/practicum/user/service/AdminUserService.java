@@ -28,7 +28,7 @@ public interface AdminUserService {
 
     /**
      * Удаление пользователя
-     * @param userId Bltynbabrfnjh gjkmpjdfntkz
+     * @param userId Идентификатор пользователя
      */
     void deleteUser(long userId);
 

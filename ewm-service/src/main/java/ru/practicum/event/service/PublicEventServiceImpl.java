@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.EventSort.VIEWS;
@@ -53,7 +54,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         // sort by views
         if (sort != null) {
             EventSort eventSort = EventSort.valueOf(sort);
-            if (eventSort.equals(VIEWS)) {
+            if (Objects.equals(eventSort, VIEWS)) {
                 events = events.stream()
                         .sorted(Comparator.comparing(EventShortDto::getViews, Comparator.reverseOrder()))
                         .skip(from)
@@ -67,7 +68,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public @NotNull EventFullDto getEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
-        if (event.getState().equals(EventState.PUBLISHED)) {
+        if (Objects.equals(event.getState(), EventState.PUBLISHED)) {
             return commonRepository.mapEventToFullDto(event);
         } else {
             throw new AccessDeniedException("access to this event is forbidden");

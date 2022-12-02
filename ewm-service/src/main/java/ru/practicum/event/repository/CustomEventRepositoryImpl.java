@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.EventSort.EVENT_DATE;
@@ -152,7 +153,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         // sort by event date
         if (sort != null) {
             EventSort eventSort = EventSort.valueOf(sort);
-            if (eventSort.equals(EVENT_DATE)) {
+            if (Objects.equals(eventSort, EVENT_DATE)) {
                 jpaQuery.orderBy(qEvent.eventDate.asc());
                 // from
                 jpaQuery.offset(from);

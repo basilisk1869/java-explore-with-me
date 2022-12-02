@@ -53,7 +53,7 @@ public class UserRequestServiceImpl implements UserRequestService {
             throw new AccessDeniedException("user is event initiator");
         }
         // нельзя участвовать в неопубликованном событии
-        if (!event.getState().equals(EventState.PUBLISHED)) {
+        if (!Objects.equals(event.getState(), EventState.PUBLISHED)) {
             throw new AccessDeniedException("cannot participate in unpublished event");
         }
         Request request = new Request();

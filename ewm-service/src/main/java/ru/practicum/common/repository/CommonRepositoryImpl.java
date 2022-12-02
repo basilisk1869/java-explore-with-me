@@ -21,6 +21,7 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -70,7 +71,7 @@ public class CommonRepositoryImpl implements CommonRepository {
     public @NotNull Event getEventByUser(long userId, long eventId) {
         User initiator = getUser(userId);
         Event event = getEvent(eventId);
-        if (event.getInitiator().equals(initiator)) {
+        if (Objects.equals(event.getInitiator(), initiator)) {
             return event;
         } else {
             throw new AccessDeniedException("user has no access for this event");
@@ -94,7 +95,7 @@ public class CommonRepositoryImpl implements CommonRepository {
     @Override
     public long getConfirmedRequests(@NotNull Event event) {
         return event.getRequests() == null ? 0L : event.getRequests().stream()
-                .filter(request -> request.getStatus().equals(RequestStatus.CONFIRMED))
+                .filter(request -> Objects.equals(request.getStatus(), RequestStatus.CONFIRMED))
                 .count();
     }
 

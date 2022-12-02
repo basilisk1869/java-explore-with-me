@@ -18,6 +18,7 @@ import ru.practicum.stats.StatsClient;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -66,7 +67,7 @@ public class AdminEventServiceImpl implements AdminEventService {
             throw new AccessDeniedException("event is published too late");
         }
         // событие должно быть в состоянии ожидания публикации
-        if (!event.getState().equals(EventState.PENDING)) {
+        if (!Objects.equals(event.getState(), EventState.PENDING)) {
             throw new AccessDeniedException("event state should be pending");
         }
         event.setState(EventState.PUBLISHED);
@@ -79,7 +80,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     public @NotNull EventFullDto rejectEvent(long eventId) {
         Event event = commonRepository.getEvent(eventId);
         // событие не должно быть опубликовано
-        if (event.getState().equals(EventState.PUBLISHED)) {
+        if (Objects.equals(event.getState(), EventState.PUBLISHED)) {
             throw new AccessDeniedException("cannot reject published event");
         }
         event.setState(EventState.CANCELED);

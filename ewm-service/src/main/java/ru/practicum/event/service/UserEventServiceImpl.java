@@ -24,6 +24,7 @@ import ru.practicum.user.model.User;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +56,8 @@ public class UserEventServiceImpl implements UserEventService {
     public @NotNull EventFullDto patchEvent(long userId, @NotNull UpdateEventRequest updateEventRequest) {
         Event event = commonRepository.getEventByUser(userId, updateEventRequest.getEventId());
         // изменить можно только отмененные события или события в состоянии ожидания модерации
-        if (!event.getState().equals(EventState.CANCELED) && !event.getState().equals(EventState.PENDING)) {
+        if (!Objects.equals(event.getState(), EventState.CANCELED)
+                && !Objects.equals(event.getState(), EventState.PENDING)) {
             throw new AccessDeniedException("only canceled or pending events can be changed");
         }
         // дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента
@@ -64,7 +66,7 @@ public class UserEventServiceImpl implements UserEventService {
             throw new AccessDeniedException("event date is too early");
         }
         // если редактируется отменённое событие, то оно автоматически переходит в состояние ожидания модерации
-        if (event.getState().equals(EventState.CANCELED)) {
+        if (Objects.equals(event.getState(), EventState.CANCELED)) {
             event.setState(EventState.PENDING);
         }
         modelMapper.map(updateEventRequest, event);
@@ -98,7 +100,7 @@ public class UserEventServiceImpl implements UserEventService {
     @Override
     public @NotNull EventFullDto cancelEvent(long userId, long eventId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
-        if (event.getState().equals(EventState.PENDING)) {
+        if (Objects.equals(event.getState(), EventState.PENDING)) {
             event.setState(EventState.CANCELED);
             eventRepository.save(event);
             return commonRepository.mapEventToFullDto(event);
@@ -119,7 +121,7 @@ public class UserEventServiceImpl implements UserEventService {
     public @NotNull ParticipationRequestDto confirmRequest(long userId, long eventId, long reqId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         Request request = commonRepository.getRequest(reqId);
-        if (request.getEvent().equals(event)) {
+        if (Objects.equals(request.getEvent(), event)) {
             // нельзя подтвердить заявку, если уже достигнут лимит по заявкам на данное событие
             if (event.getParticipantLimit() > 0
                     && event.getParticipantLimit() == commonRepository.getConfirmedRequests(event)) {
@@ -132,7 +134,7 @@ public class UserEventServiceImpl implements UserEventService {
             if (event.getParticipantLimit() > 0
                     && event.getParticipantLimit() == commonRepository.getConfirmedRequests(event)) {
                 requestRepository.findAllByEvent(event).stream()
-                        .filter(anotherRequest -> anotherRequest.getStatus().equals(RequestStatus.PENDING))
+                        .filter(anotherRequest -> Objects.equals(anotherRequest.getStatus(), RequestStatus.PENDING))
                         .forEach(anotherRequest -> {
                             anotherRequest.setStatus(RequestStatus.CANCELED);
                             requestRepository.save(anotherRequest);
@@ -148,7 +150,7 @@ public class UserEventServiceImpl implements UserEventService {
     public @NotNull ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) {
         Event event = commonRepository.getEventByUser(userId, eventId);
         Request request = commonRepository.getRequest(reqId);
-        if (request.getEvent().equals(event)) {
+        if (Objects.equals(request.getEvent(), event)) {
             request.setStatus(RequestStatus.REJECTED);
             requestRepository.save(request);
             return modelMapper.map(request, ParticipationRequestDto.class);
