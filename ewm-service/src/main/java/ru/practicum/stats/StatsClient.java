@@ -17,10 +17,7 @@ import ru.practicum.event.dto.EventShortDto;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,7 +32,7 @@ public class StatsClient {
 
     /**
      * Создание клиента
-     * @param builder
+     * @param builder Генератор для RestTemplate
      */
     public StatsClient(@Autowired RestTemplateBuilder builder) {
         Optional<Properties> properties = getApplicationProperties();
@@ -72,14 +69,21 @@ public class StatsClient {
                                                                 @NotNull LocalDateTime end,
                                                                 @Nullable List<String> uris,
                                                                 @Nullable Boolean unique) {
-        Map<String, Object> parameters = Map.of(
-            "start", start,
-            "end", end,
-            "uris", uris,
-            "unique", unique);
+        String path = "/views?start={start}&end={end}";
+        Map<String, Object> parameters = new TreeMap<>();
+        parameters.put("start", start);
+        parameters.put("end", end);
+        if (uris != null) {
+            parameters.put("uris", uris);
+            path += "&uris={uris}";
+        }
+        if (unique != null) {
+            parameters.put("unique", unique);
+            path += "&unique={unique}";
+        }
         HttpEntity<Object> requestEntity = new HttpEntity<>(null, defaultHeaders());
-        return restTemplate.exchange("/views?start={start}&end={end}&uris={uris}&unique={unique}",
-            HttpMethod.POST, requestEntity, new ParameterizedTypeReference<List<ViewStats>>(){}, parameters);
+        return restTemplate.exchange(path, HttpMethod.POST, requestEntity,
+                new ParameterizedTypeReference<List<ViewStats>>(){}, parameters);
     }
 
     /**

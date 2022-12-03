@@ -36,7 +36,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
         List<User> users = userRepository.findAll(dataRange.getPageable()).getContent();
         return dataRange.trimPage(users).stream()
-                .filter(user -> (ids.size() == 0 || ids.contains(user.getId())))
+                .filter(user -> (ids == null || ids.size() == 0 || ids.contains(user.getId())))
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }
