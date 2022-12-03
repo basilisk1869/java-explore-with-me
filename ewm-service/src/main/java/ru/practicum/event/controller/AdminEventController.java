@@ -23,15 +23,15 @@ public class AdminEventController {
     private final AdminEventService adminEventService;
 
     @GetMapping
-    List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> userIds,
-                                 @RequestParam(required = false) List<String> stateIds,
-                                 @RequestParam(required = false) List<Long> categoryIds,
+    List<EventFullDto> getEvents(@RequestParam(required = false) List<Long> users,
+                                 @RequestParam(required = false) List<String> states,
+                                 @RequestParam(required = false) List<Long> categories,
                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                  @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                  @RequestParam(required = false, defaultValue = "0") Integer from,
                                  @RequestParam(required = false, defaultValue = "10") Integer size) {
         log.info("getEvents");
-        return adminEventService.getEvents(userIds, stateIds, categoryIds, rangeStart, rangeEnd, from, size);
+        return adminEventService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PutMapping("/{eventId}")
