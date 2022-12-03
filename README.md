@@ -40,11 +40,13 @@ stats-server - сбор статистики<br>
 ### ewm-service
 
 Поднимается на сетевом порте 8080.<br>
+Swagger: http://localhost:8080/swagger-ui/index.html <br>
 Имеет следующую структуру БД:<br>
 ![ewm-schema.png](doc%2Fewm-schema.png)
 
 ### stats-server
 
 Поднимается на сетевом порте 9090.<br>
+Swagger: http://localhost:9090/swagger-ui/index.html <br>
 Имеет следующую структуру БД:<br>
 ![stats-schema.png](doc%2Fstats-schema.png)
