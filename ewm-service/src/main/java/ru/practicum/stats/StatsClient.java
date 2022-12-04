@@ -1,10 +1,24 @@
 package ru.practicum.stats;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -13,13 +27,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
-
-import javax.validation.constraints.NotNull;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Клиент запроса статистики просмотров
@@ -32,16 +39,13 @@ public class StatsClient {
 
     /**
      * Создание клиента
+     * @param environment Переменные конфигурации
      * @param builder Генератор для RestTemplate
      */
-    public StatsClient(@Autowired RestTemplateBuilder builder) {
-        Optional<Properties> properties = getApplicationProperties();
-        String statsServerUrl = "http://stats-server:9090";
-        if (properties.isPresent()) {
-            statsServerUrl = properties.get().getProperty("stats-server-url", statsServerUrl);
-        }
+    public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder) {
         restTemplate = builder
-                .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUrl))
+                .uriTemplateHandler(new DefaultUriBuilderFactory(
+                    Objects.requireNonNull(environment.getProperty("stats-server-url"))))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                 .build();
     }
@@ -156,16 +160,6 @@ public class StatsClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
-    }
-
-    private Optional<Properties> getApplicationProperties() {
-        try {
-            Properties properties = new Properties();
-            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
-            return Optional.of(properties);
-        } catch (IOException e) {
-            return Optional.empty();
-        }
     }
 
 }
