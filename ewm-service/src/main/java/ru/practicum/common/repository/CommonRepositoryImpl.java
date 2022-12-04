@@ -17,6 +17,8 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
+import ru.practicum.review.model.Review;
+import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
@@ -42,6 +44,9 @@ public class CommonRepositoryImpl implements CommonRepository {
 
     @Autowired
     private final RequestRepository requestRepository;
+
+    @Autowired
+    private final ReviewRepository reviewRepository;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -75,6 +80,24 @@ public class CommonRepositoryImpl implements CommonRepository {
             return event;
         } else {
             throw new AccessDeniedException("user has no access for this event");
+        }
+    }
+
+    @Override
+    public Review getReview(long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(() -> {
+            throw new NotFoundException("review is not found");
+        });
+    }
+
+    @Override
+    public Review getReviewByUser(long userId, long reviewId) {
+        User reviewer = getUser(userId);
+        Review review = getReview(reviewId);
+        if (Objects.equals(review.getReviewer(), reviewer)) {
+            return review;
+        } else {
+            throw new AccessDeniedException("user has no access for this review");
         }
     }
 

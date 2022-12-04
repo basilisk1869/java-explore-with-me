@@ -5,7 +5,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
@@ -28,10 +27,8 @@ import static ru.practicum.event.model.EventSort.EVENT_DATE;
 @RequiredArgsConstructor
 public class CustomEventRepositoryImpl implements CustomEventRepository {
 
-    @Autowired
     private final EntityManager entityManager;
 
-    @Autowired
     private final ModelMapper modelMapper;
 
     @Override
