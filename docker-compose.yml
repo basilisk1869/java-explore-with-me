@@ -1,11 +1,20 @@
 version: '3.1'
 services:
+  dozzle:
+    image: amir20/dozzle
+    ports:
+      - "7070:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   stats-db:
     image: postgres:14-alpine
     environment:
       - POSTGRES_DB=stats
       - POSTGRES_USER=stats-user
       - POSTGRES_PASSWORD=stats-password
+    depends_on:
+      - dozzle
 
   ewm-db:
     image: postgres:14-alpine
@@ -13,6 +22,8 @@ services:
       - POSTGRES_DB=ewm
       - POSTGRES_USER=ewm-user
       - POSTGRES_PASSWORD=ewm-password
+    depends_on:
+      - dozzle
 
   stats-server:
     build: stats-server
@@ -25,6 +36,7 @@ services:
       - DB_USER=stats-user
       - DB_PASSWORD=stats-password
     depends_on:
+      - dozzle
       - stats-db
 
   ewm-service:
@@ -40,6 +52,6 @@ services:
       - STATS-SERVER=stats-server
       - STATS_PORT=9090
     depends_on:
+      - dozzle
       - ewm-db
       - stats-server
-

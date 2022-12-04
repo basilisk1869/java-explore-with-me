@@ -1,6 +1,6 @@
 https://github.com/basilisk1869/java-explore-with-me/pull/1
 
-# java-explore-with-me
+# JAVA-EXPLORE-WITH-ME
 
 ## Идея
 
@@ -37,14 +37,19 @@ stats-server - сбор статистики<br>
 Каждый сервис взаимодействует со своей базой данных.<br>
 ![architecture.png](doc%2Farchitecture.png)
 
-### ewm-service
+### Логи
+
+Приложение предоставляет доступ к live time логам с помощью Dozzle.<br>
+http://localhost:7070 <br>
+
+### Сервис ewm-service
 
 Поднимается на сетевом порте 8080.<br>
 Swagger: http://localhost:8080/swagger-ui/index.html <br>
 Имеет следующую структуру БД:<br>
 ![ewm-schema.png](doc%2Fewm-schema.png)
 
-### stats-server
+### Сервис stats-server
 
 Поднимается на сетевом порте 9090.<br>
 Swagger: http://localhost:9090/swagger-ui/index.html <br>
