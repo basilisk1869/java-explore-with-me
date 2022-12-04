@@ -9,10 +9,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ViewStats {
 
+    /**
+     * Идентификатор сервиса для которого записывается информация
+     */
     private String app;
 
+    /**
+     * URI для которого был осуществлен запрос
+     */
     private String uri;
 
+    /**
+     * Количество просмотров
+     */
     private Long hits;
 
 }
