@@ -31,4 +31,5 @@ public class UserUserControllerTest extends BaseReviewControllerTest {
         user = getUser(user.getId());
         assertTrue(user.getShowRating());
     }
+
 }
