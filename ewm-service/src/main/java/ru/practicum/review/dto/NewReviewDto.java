@@ -1,13 +1,28 @@
 package ru.practicum.review.dto;
 
-import ru.practicum.event.model.Event;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
+import javax.validation.constraints.NotNull;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NewReviewDto {
 
-    private Event event;
+    @NotNull
+    private Long event;
 
+    @NotNull
+    @Range(min = -10, max = 10)
     private Integer rating;
 
+    @Length(max = 2000)
     private String text;
 
 }

@@ -37,7 +37,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         // text
         if (text != null) {
             String preparedText = "%" + text.toUpperCase() + "%";
-            jpaQuery.where(qReview.text.like(preparedText));
+            jpaQuery.where(qReview.text.upper().like(preparedText));
         }
         // from
         jpaQuery.offset(from);

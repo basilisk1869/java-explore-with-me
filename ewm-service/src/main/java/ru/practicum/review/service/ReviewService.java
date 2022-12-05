@@ -12,11 +12,13 @@ public interface ReviewService {
 
     List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size);
 
-    ReviewDto getReview(long eventId, long reviewId);
+    List<ReviewDto> getReviews(long userId);
 
     ReviewDto postReview(long userId, NewReviewDto newReviewDto);
 
     ReviewDto patchReview(long userId, long reviewId, UpdateReviewDto updateReviewDto);
+
+    ReviewDto getReview(long userId, long reviewId);
 
     void deleteReview(long userId, long reviewId);
 

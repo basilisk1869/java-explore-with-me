@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
 
@@ -33,6 +34,7 @@ public class Review {
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @CreationTimestamp
     private LocalDateTime created;
 
     private Integer rating;
