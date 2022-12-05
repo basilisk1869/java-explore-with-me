@@ -33,12 +33,12 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
 
     @Override
     public @NotNull List<EventFullDto> getEvents(@Nullable List<Long> userIds,
-                                          @Nullable List<String> stateIds,
-                                          @Nullable List<Long> categoryIds,
-                                          @Nullable LocalDateTime rangeStart,
-                                          @Nullable LocalDateTime rangeEnd,
-                                          int from,
-                                          int size) {
+                                                 @Nullable List<String> stateIds,
+                                                 @Nullable List<Long> categoryIds,
+                                                 @Nullable LocalDateTime rangeStart,
+                                                 @Nullable LocalDateTime rangeEnd,
+                                                 int from,
+                                                 int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QEvent qEvent = QEvent.event;
         QRequest qRequest = QRequest.request;

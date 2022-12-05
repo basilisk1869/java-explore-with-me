@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS reviews(
     created TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     rating INT NOT NULL,
     text VARCHAR(2000),
+    status VARCHAR NOT NULL,
     FOREIGN KEY(reviewer_id) REFERENCES users(id),
     FOREIGN KEY(event_id) REFERENCES events(id)
 );

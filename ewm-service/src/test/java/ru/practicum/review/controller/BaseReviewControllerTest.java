@@ -11,6 +11,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.location.dto.LocationDto;
+import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.review.dto.NewReviewDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.dto.UpdateReviewDto;
@@ -91,6 +92,39 @@ public class BaseReviewControllerTest {
                     .andExpect(status().isOk())
                     .andReturn();
             return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventFullDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected EventFullDto publishEvent(long eventId) {
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .patch("/admin/events/" + eventId + "/publish")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventFullDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected ParticipationRequestDto createRequest(long userId, long eventId) {
+        ParticipationRequestDto request = ParticipationRequestDto.builder()
+                .requester(userId)
+                .event(eventId)
+                .build();
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .post("/users/" + userId + "/requests")
+                            .queryParam("eventId", String.valueOf(eventId))
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ParticipationRequestDto.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

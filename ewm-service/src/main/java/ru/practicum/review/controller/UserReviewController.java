@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/users/{userId}/reviews")
 @RequiredArgsConstructor
 @Slf4j
 public class UserReviewController {
@@ -20,21 +21,21 @@ public class UserReviewController {
     @Autowired
     UserReviewService userReviewService;
 
-    @GetMapping("/users/{userId}/reviews")
+    @GetMapping
     List<ReviewDto> getReviews(@PathVariable long userId) {
         List<ReviewDto> reviews = userReviewService.getReviews(userId);
         log.info("getReviews by user " + userId + " " + reviews);
         return reviews;
     }
 
-    @PostMapping("/users/{userId}/reviews")
+    @PostMapping
     ReviewDto postReview(@PathVariable long userId,
                          @RequestBody @Valid NewReviewDto newReviewDto) {
         log.info("postReview " + userId + " " + newReviewDto);
         return userReviewService.postReview(userId, newReviewDto);
     }
 
-    @PatchMapping("/users/{userId}/reviews/{reviewId}")
+    @PatchMapping("/{reviewId}")
     ReviewDto patchReview(@PathVariable long userId,
                           @PathVariable long reviewId,
                           @RequestBody @Valid UpdateReviewDto updateReviewDto) {
@@ -42,14 +43,14 @@ public class UserReviewController {
         return userReviewService.patchReview(userId, reviewId, updateReviewDto);
     }
 
-    @GetMapping("/users/{userId}/reviews/{reviewId}")
+    @GetMapping("/{reviewId}")
     ReviewDto getReviews(@PathVariable long userId, @PathVariable long reviewId) {
         ReviewDto review = userReviewService.getReview(userId, reviewId);
         log.info("getReview " + userId + " " + reviewId + " " + review);
         return review;
     }
 
-    @DeleteMapping("/users/{userId}/reviews/{reviewId}")
+    @DeleteMapping("/{reviewId}")
     void deleteReview(@PathVariable long userId, @PathVariable long reviewId) {
         log.info("deleteReview " + reviewId);
         userReviewService.deleteReview(userId, reviewId);

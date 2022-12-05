@@ -5,14 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.repository.CommonRepository;
 import ru.practicum.event.model.Event;
+import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestStatus;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.review.dto.NewReviewDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.dto.UpdateReviewDto;
 import ru.practicum.review.model.Review;
+import ru.practicum.review.model.ReviewStatus;
 import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +31,9 @@ public class UserReviewServiceImpl implements UserReviewService {
 
     @Autowired
     ReviewRepository reviewRepository;
+
+    @Autowired
+    RequestRepository requestRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -39,7 +50,14 @@ public class UserReviewServiceImpl implements UserReviewService {
     public ReviewDto postReview(long userId, NewReviewDto newReviewDto) {
         User reviewer = commonRepository.getUser(userId);
         Event event = commonRepository.getEvent(newReviewDto.getEvent());
+        Optional<Request> request = requestRepository.findByRequesterAndEvent(reviewer, event);
+        if (request.isEmpty() || !Objects.equals(request.get().getStatus(), RequestStatus.CONFIRMED)) {
+            throw new AccessDeniedException("user is not participated in this event");
+        }
         Review review = modelMapper.map(newReviewDto, Review.class);
+        if (review.getText() == null) {
+            review.setStatus(ReviewStatus.CONFIRMED);
+        }
         review.setReviewer(reviewer);
         review.setEvent(event);
         reviewRepository.save(review);

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.event.model.Event;
+import ru.practicum.request.model.RequestStatus;
 import ru.practicum.user.model.User;
 
 import javax.persistence.*;
@@ -40,5 +41,11 @@ public class Review {
     private Integer rating;
 
     private String text;
+
+    /**
+     * Статус обзора
+     */
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus status = ReviewStatus.PENDING;
 
 }
