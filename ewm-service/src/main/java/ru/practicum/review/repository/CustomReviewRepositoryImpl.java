@@ -8,9 +8,11 @@ import ru.practicum.event.model.Event;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.model.QReview;
 import ru.practicum.review.model.Review;
+import ru.practicum.user.model.User;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -19,6 +21,8 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private final EntityManager entityManager;
 
     private final ModelMapper modelMapper;
+
+    private static final int NEUTRAL_RATING = 5;
 
     @Override
     public List<ReviewDto> getReviews(Event event, Boolean positive, String text, int from, int size) {
@@ -29,9 +33,9 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         // positive
         if (positive != null) {
             if (positive) {
-                jpaQuery.where(qReview.rating.gt(0));
+                jpaQuery.where(qReview.rating.gt(NEUTRAL_RATING));
             } else {
-                jpaQuery.where(qReview.rating.lt(0));
+                jpaQuery.where(qReview.rating.lt(NEUTRAL_RATING));
             }
         }
         // text
@@ -47,6 +51,32 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         return jpaQuery.fetch().stream()
                 .map(review -> modelMapper.map(review, ReviewDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OptionalDouble eventRating(Event event) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
+        QReview qReview = QReview.review;
+        List<Integer> ratingList = jpaQueryFactory.select(qReview.rating)
+                .from(qReview)
+                .where(qReview.event.eq(event))
+                .fetch();
+        return ratingList.stream()
+                .mapToDouble(Double::valueOf)
+                .average();
+    }
+
+    @Override
+    public OptionalDouble initiatorRating(User initiator) {
+        JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
+        QReview qReview = QReview.review;
+        List<Integer> ratingList = jpaQueryFactory.select(qReview.rating)
+                .from(qReview)
+                .where(qReview.event.initiator.eq(initiator))
+                .fetch();
+        return ratingList.stream()
+                .mapToDouble(Double::valueOf)
+                .average();
     }
 
 }

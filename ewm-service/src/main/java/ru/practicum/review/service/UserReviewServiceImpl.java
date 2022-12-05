@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ReviewServiceImpl implements ReviewService {
+public class UserReviewServiceImpl implements UserReviewService {
 
     @Autowired
     CommonRepository commonRepository;
@@ -26,12 +26,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Autowired
     ModelMapper modelMapper;
-
-    @Override
-    public List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size) {
-        Event event = commonRepository.getEvent(eventId);
-        return reviewRepository.getReviews(event, positive, text, from, size);
-    }
 
     @Override
     public List<ReviewDto> getReviews(long userId) {

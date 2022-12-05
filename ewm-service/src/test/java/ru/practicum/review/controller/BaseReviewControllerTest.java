@@ -2,11 +2,6 @@ package ru.practicum.review.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -27,13 +22,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
-public class ReviewControllerTest {
+public class BaseReviewControllerTest {
 
     private final ObjectMapper objectMapper;
 
@@ -41,63 +32,12 @@ public class ReviewControllerTest {
 
     private final Random random = new Random();
 
-    public ReviewControllerTest(@Autowired ObjectMapper objectMapper, @Autowired MockMvc mockMvc) {
+    public BaseReviewControllerTest(ObjectMapper objectMapper, MockMvc mockMvc) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
     }
 
-    @Test
-    void postReview() {
-        UserDto user = createUser();
-        CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        createReview(user.getId(), event.getId());
-    }
-
-    @Test
-    void deleteReview() {
-        UserDto user = createUser();
-        CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review = createReview(user.getId(), event.getId());
-        deleteReview(user.getId(), review.getId());
-    }
-
-    @Test
-    void getReview() {
-        UserDto user = createUser();
-        CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review1 = createReview(user.getId(), event.getId());
-        ReviewDto review2 = getReview(event.getId(), review1.getId());
-        assertEquals(review1, review2);
-    }
-
-    @Test
-    void getReviewsByUser() {
-        UserDto user = createUser();
-        CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review1 = createReview(user.getId(), event.getId());
-        ReviewDto review2 = createReview(user.getId(), event.getId());
-        List<ReviewDto> reviews = getReviews(user.getId());
-        assertEquals(List.of(review1, review2), reviews);
-    }
-
-    @Test
-    void patchReview() {
-        UserDto user = createUser();
-        CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review1 = createReview(user.getId(), event.getId());
-        ReviewDto review2 = getReview(event.getId(), review1.getId());
-        assertEquals(review1, review2);
-        ReviewDto review3 = patchReview(user.getId(), review1.getId());
-        ReviewDto review4 = getReview(event.getId(), review1.getId());
-        assertEquals(review3, review4);
-    }
-
-    private UserDto createUser() {
+    protected UserDto createUser() {
         NewUserRequest user = NewUserRequest.builder()
                 .name("User " + UUID.randomUUID())
                 .email(UUID.randomUUID() + "@yandex.ru")
@@ -115,7 +55,7 @@ public class ReviewControllerTest {
             throw new RuntimeException(e);
         }
     }
-    private CategoryDto createCategory() {
+    protected CategoryDto createCategory() {
         NewCategoryDto category = NewCategoryDto.builder()
                 .name("Category " + UUID.randomUUID())
                 .build();
@@ -133,7 +73,7 @@ public class ReviewControllerTest {
         }
     }
 
-    private EventFullDto createEvent(long userId, long catId) {
+    protected EventFullDto createEvent(long userId, long catId) {
         NewEventDto event = NewEventDto.builder()
                 .annotation("It's a very interesting and amazing idea!")
                 .category(catId)
@@ -156,10 +96,10 @@ public class ReviewControllerTest {
         }
     }
 
-    private ReviewDto createReview(long userId, long eventId) {
+    protected ReviewDto createReview(long userId, long eventId) {
         NewReviewDto review = NewReviewDto.builder()
                 .event(eventId)
-                .rating(random.nextInt(20) - 10)
+                .rating(random.nextInt(10))
                 .text("Some random review text... " + UUID.randomUUID())
                 .build();
         try {
@@ -176,7 +116,7 @@ public class ReviewControllerTest {
         }
     }
 
-    private ReviewDto patchReview(long userId, long reviewId) {
+    protected ReviewDto patchReview(long userId, long reviewId) {
         UpdateReviewDto review = UpdateReviewDto.builder()
                 .text("Some random updated text... " + UUID.randomUUID())
                 .build();
@@ -194,7 +134,7 @@ public class ReviewControllerTest {
         }
     }
 
-    private void deleteReview(long userId, long reviewId) {
+    protected void deleteReview(long userId, long reviewId) {
         try {
             mockMvc.perform(MockMvcRequestBuilders
                             .delete("/users/" + userId + "/reviews/" + reviewId))
@@ -205,7 +145,7 @@ public class ReviewControllerTest {
         }
     }
 
-    private ReviewDto getReview(long userId, long reviewId) {
+    protected ReviewDto getReview(long userId, long reviewId) {
         try {
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                             .get("/users/" + userId + "/reviews/" + reviewId)
@@ -218,7 +158,7 @@ public class ReviewControllerTest {
         }
     }
 
-    private List<ReviewDto> getReviews(long userId) {
+    protected List<ReviewDto> getReviews(long userId) {
         try {
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                             .get("/users/" + userId + "/reviews")

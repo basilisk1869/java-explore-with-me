@@ -19,7 +19,7 @@ public class NewReviewDto {
     private Long event;
 
     @NotNull
-    @Range(min = -10, max = 10)
+    @Range(min = 0, max = 10)
     private Integer rating;
 
     @Length(max = 2000)

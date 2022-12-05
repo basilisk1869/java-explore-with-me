@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.review.dto.NewReviewDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.dto.UpdateReviewDto;
-import ru.practicum.review.service.ReviewService;
+import ru.practicum.review.service.UserReviewService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,25 +15,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class ReviewController {
+public class UserReviewController {
 
     @Autowired
-    ReviewService reviewService;
-
-    @GetMapping("/events/{eventId}/reviews")
-    List<ReviewDto> getReviews(@PathVariable Long eventId,
-                               @RequestParam(required = false) Boolean positive,
-                               @RequestParam(required = false) String text,
-                               @RequestParam(required = false, defaultValue = "0") Integer from,
-                               @RequestParam(required = false, defaultValue = "10") Integer size) {
-        List<ReviewDto> reviews = reviewService.getReviews(eventId, positive, text, from, size);
-        log.info("getReviews by event " + eventId + " " + reviews);
-        return reviews;
-    }
+    UserReviewService userReviewService;
 
     @GetMapping("/users/{userId}/reviews")
     List<ReviewDto> getReviews(@PathVariable long userId) {
-        List<ReviewDto> reviews = reviewService.getReviews(userId);
+        List<ReviewDto> reviews = userReviewService.getReviews(userId);
         log.info("getReviews by user " + userId + " " + reviews);
         return reviews;
     }
@@ -42,7 +31,7 @@ public class ReviewController {
     ReviewDto postReview(@PathVariable long userId,
                          @RequestBody @Valid NewReviewDto newReviewDto) {
         log.info("postReview " + userId + " " + newReviewDto);
-        return reviewService.postReview(userId, newReviewDto);
+        return userReviewService.postReview(userId, newReviewDto);
     }
 
     @PatchMapping("/users/{userId}/reviews/{reviewId}")
@@ -50,12 +39,12 @@ public class ReviewController {
                           @PathVariable long reviewId,
                           @RequestBody @Valid UpdateReviewDto updateReviewDto) {
         log.info("patchReview " + userId + " " + reviewId + " " + updateReviewDto);
-        return reviewService.patchReview(userId, reviewId, updateReviewDto);
+        return userReviewService.patchReview(userId, reviewId, updateReviewDto);
     }
 
     @GetMapping("/users/{userId}/reviews/{reviewId}")
     ReviewDto getReviews(@PathVariable long userId, @PathVariable long reviewId) {
-        ReviewDto review = reviewService.getReview(userId, reviewId);
+        ReviewDto review = userReviewService.getReview(userId, reviewId);
         log.info("getReview " + userId + " " + reviewId + " " + review);
         return review;
     }
@@ -63,7 +52,7 @@ public class ReviewController {
     @DeleteMapping("/users/{userId}/reviews/{reviewId}")
     void deleteReview(@PathVariable long userId, @PathVariable long reviewId) {
         log.info("deleteReview " + reviewId);
-        reviewService.deleteReview(userId, reviewId);
+        userReviewService.deleteReview(userId, reviewId);
     }
 
 }

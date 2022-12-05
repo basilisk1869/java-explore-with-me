@@ -8,9 +8,7 @@ import ru.practicum.review.dto.UpdateReviewDto;
 import java.util.List;
 
 @Service
-public interface ReviewService {
-
-    List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size);
+public interface UserReviewService {
 
     List<ReviewDto> getReviews(long userId);
 
