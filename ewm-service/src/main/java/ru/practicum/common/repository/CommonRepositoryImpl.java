@@ -24,6 +24,7 @@ import ru.practicum.user.repository.UserRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 @Component
 @RequiredArgsConstructor
@@ -127,6 +128,23 @@ public class CommonRepositoryImpl implements CommonRepository {
         EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
         eventFullDto.setConfirmedRequests(getConfirmedRequests(event));
         eventFullDto.setViews(0L);
+        // if rating shown
+        if (event.getInitiator().getShowRating()) {
+            // set event rating
+            OptionalDouble eventRating = reviewRepository.getEventRating(event.getId());
+            if (eventRating.isPresent()) {
+                eventFullDto.setRating(eventRating.getAsDouble());
+            } else {
+                eventFullDto.setRating(null);
+            }
+            // set initiator rating
+            OptionalDouble initiatorRating = reviewRepository.getInitiatorRating(event.getInitiator().getId());
+            if (initiatorRating.isPresent()) {
+                eventFullDto.getInitiator().setRating(initiatorRating.getAsDouble());
+            } else {
+                eventFullDto.getInitiator().setRating(null);
+            }
+        }
         return eventFullDto;
     }
 

@@ -64,25 +64,37 @@ public class UserReviewControllerTest extends BaseReviewControllerTest {
 
     @Test
     void getReviewsByUser() {
-        UserDto user = createUser();
+        UserDto initiator = createUser();
         CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review1 = createReview(user.getId(), event.getId());
-        ReviewDto review2 = createReview(user.getId(), event.getId());
-        List<ReviewDto> reviews = getReviews(user.getId());
+        UserDto requester = createUser();
+        // make review1 for event1
+        EventFullDto event1 = createEvent(initiator.getId(), category.getId());
+        event1 = publishEvent(event1.getId());
+        ParticipationRequestDto request1 = createRequest(requester.getId(), event1.getId());
+        ReviewDto review1 = createReview(requester.getId(), event1.getId());
+        // make review2 for event2
+        EventFullDto event2 = createEvent(initiator.getId(), category.getId());
+        event2 = publishEvent(event2.getId());
+        ParticipationRequestDto request2 = createRequest(requester.getId(), event2.getId());
+        ReviewDto review2 = createReview(requester.getId(), event2.getId());
+        // get requester reviews
+        List<ReviewDto> reviews = getReviews(requester.getId());
         assertEquals(List.of(review1, review2), reviews);
     }
 
     @Test
     void patchReview() {
-        UserDto user = createUser();
+        UserDto initiator = createUser();
         CategoryDto category = createCategory();
-        EventFullDto event = createEvent(user.getId(), category.getId());
-        ReviewDto review1 = createReview(user.getId(), event.getId());
-        ReviewDto review2 = getReview(event.getId(), review1.getId());
+        EventFullDto event = createEvent(initiator.getId(), category.getId());
+        event = publishEvent(event.getId());
+        UserDto requester = createUser();
+        ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
+        ReviewDto review1 = createReview(requester.getId(), event.getId());
+        ReviewDto review2 = getReview(requester.getId(), review1.getId());
         assertEquals(review1, review2);
-        ReviewDto review3 = patchReview(user.getId(), review1.getId());
-        ReviewDto review4 = getReview(event.getId(), review1.getId());
+        ReviewDto review3 = patchReview(requester.getId(), review1.getId());
+        ReviewDto review4 = getReview(requester.getId(), review1.getId());
         assertEquals(review3, review4);
     }
 

@@ -22,9 +22,8 @@ public class AdminReviewServiceImpl implements AdminReviewService {
     ModelMapper modelMapper;
 
     @Override
-    public ReviewDto setReviewStatus(long reviewId, String status) {
+    public ReviewDto setReviewStatus(long reviewId, ReviewStatus reviewStatus) {
         Review review = commonRepository.getReview(reviewId);
-        ReviewStatus reviewStatus = ReviewStatus.valueOf(status);
         review.setStatus(reviewStatus);
         reviewRepository.save(review);
         return modelMapper.map(review, ReviewDto.class);

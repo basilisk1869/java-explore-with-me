@@ -9,6 +9,6 @@ public class UserShortDto {
 
     private String name;
 
-    private Boolean showRating;
+    private Double rating;
 
 }

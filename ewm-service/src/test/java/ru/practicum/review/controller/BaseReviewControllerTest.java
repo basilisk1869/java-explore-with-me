@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.event.dto.EventFullDto;
@@ -56,6 +59,43 @@ public class BaseReviewControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+    protected UserDto getUser(long userId) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.addAll("ids", List.of(String.valueOf(userId)));
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .get("/admin/users")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .queryParams(params))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            List<UserDto> users = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                    new TypeReference<List<UserDto>>(){});
+            if (users.size() > 0) {
+                return users.get(0);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected UserDto showRating(long userId, boolean showRating) {
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .patch("/users/" + userId)
+                            .accept(MediaType.APPLICATION_JSON)
+                            .queryParam("showRating", String.valueOf(showRating)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), UserDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected CategoryDto createCategory() {
         NewCategoryDto category = NewCategoryDto.builder()
                 .name("Category " + UUID.randomUUID())
@@ -89,6 +129,19 @@ public class BaseReviewControllerTest {
                             .accept(MediaType.APPLICATION_JSON)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(event)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventFullDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected EventFullDto getEvent(long userId, long eventId) {
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .get("/users/" + userId + "/events/" + eventId)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andReturn();
             return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventFullDto.class);
@@ -201,6 +254,53 @@ public class BaseReviewControllerTest {
                     .andReturn();
             return objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                     new TypeReference<List<ReviewDto>>(){});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected List<ReviewDto> getReviews(long eventId, Boolean positive, String text) {
+        try {
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .get("/events/" + eventId + "/reviews")
+                    .accept(MediaType.APPLICATION_JSON);
+            if (positive != null) {
+                requestBuilder.queryParam("positive", String.valueOf(positive));
+            }
+            if (text != null) {
+                requestBuilder.queryParam("text", text);
+            }
+            MvcResult mvcResult = mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                    new TypeReference<List<ReviewDto>>(){});
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected ReviewDto confirmReview(long reviewId) {
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .patch("/admin/reviews/" + reviewId + "/confirm")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReviewDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected ReviewDto rejectReview(long reviewId) {
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .patch("/admin/reviews/" + reviewId + "/reject")
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReviewDto.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

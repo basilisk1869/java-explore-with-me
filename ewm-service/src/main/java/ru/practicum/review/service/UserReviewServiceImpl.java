@@ -17,7 +17,6 @@ import ru.practicum.review.model.ReviewStatus;
 import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,10 +49,20 @@ public class UserReviewServiceImpl implements UserReviewService {
     public ReviewDto postReview(long userId, NewReviewDto newReviewDto) {
         User reviewer = commonRepository.getUser(userId);
         Event event = commonRepository.getEvent(newReviewDto.getEvent());
+        // check reviewer is not initiator
+        if (Objects.equals(reviewer, event.getInitiator())) {
+            throw new AccessDeniedException("initiator cannot make review of own event");
+        }
+        // check reviewer participation
         Optional<Request> request = requestRepository.findByRequesterAndEvent(reviewer, event);
         if (request.isEmpty() || !Objects.equals(request.get().getStatus(), RequestStatus.CONFIRMED)) {
             throw new AccessDeniedException("user is not participated in this event");
         }
+        // check if review is already exists
+        if (reviewRepository.findByEventAndReviewer(event, reviewer).isPresent()) {
+            throw new AccessDeniedException("user is reviewed this event already");
+        }
+        // create review
         Review review = modelMapper.map(newReviewDto, Review.class);
         if (review.getText() == null) {
             review.setStatus(ReviewStatus.CONFIRMED);

@@ -4,11 +4,10 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import ru.practicum.event.model.Event;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.model.QReview;
 import ru.practicum.review.model.Review;
-import ru.practicum.user.model.User;
+import ru.practicum.review.model.ReviewStatus;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -25,11 +24,13 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private static final int NEUTRAL_RATING = 5;
 
     @Override
-    public List<ReviewDto> getReviews(Event event, Boolean positive, String text, int from, int size) {
+    public List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QReview qReview = QReview.review;
         JPAQuery<Review> jpaQuery = jpaQueryFactory.select(qReview)
-                .from(qReview);
+                .from(qReview)
+                .where(qReview.event.id.eq(eventId))
+                .where(qReview.status.eq(ReviewStatus.CONFIRMED));
         // positive
         if (positive != null) {
             if (positive) {
@@ -41,7 +42,7 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
         // text
         if (text != null) {
             String preparedText = "%" + text.toUpperCase() + "%";
-            jpaQuery.where(qReview.text.upper().like(preparedText));
+            jpaQuery.where(qReview.reviewer.name.upper().like(preparedText).or(qReview.text.upper().like(preparedText)));
         }
         // from
         jpaQuery.offset(from);
@@ -54,12 +55,12 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-    public OptionalDouble eventRating(Event event) {
+    public OptionalDouble getEventRating(long eventId) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QReview qReview = QReview.review;
         List<Integer> ratingList = jpaQueryFactory.select(qReview.rating)
                 .from(qReview)
-                .where(qReview.event.eq(event))
+                .where(qReview.event.id.eq(eventId))
                 .fetch();
         return ratingList.stream()
                 .mapToDouble(Double::valueOf)
@@ -67,12 +68,12 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     }
 
     @Override
-    public OptionalDouble initiatorRating(User initiator) {
+    public OptionalDouble getInitiatorRating(long userId) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QReview qReview = QReview.review;
         List<Integer> ratingList = jpaQueryFactory.select(qReview.rating)
                 .from(qReview)
-                .where(qReview.event.initiator.eq(initiator))
+                .where(qReview.event.initiator.id.eq(userId))
                 .fetch();
         return ratingList.stream()
                 .mapToDouble(Double::valueOf)
