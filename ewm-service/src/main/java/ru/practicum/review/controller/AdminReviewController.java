@@ -27,7 +27,7 @@ public class AdminReviewController {
     @PatchMapping("/{reviewId}/reject")
     ReviewDto patchReviewAsRejected(@PathVariable long reviewId) {
         ReviewDto review = adminReviewService.setReviewStatus(reviewId, ReviewStatus.REJECTED);
-        log.info("patchReviewAsConfirmed " + reviewId + " " + review);
+        log.info("patchReviewAsRejected " + reviewId + " " + review);
         return review;
     }
 

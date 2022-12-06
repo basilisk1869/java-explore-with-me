@@ -13,7 +13,7 @@ public interface CustomReviewRepository {
      * Получение отзывов по заданным условиям
      * @param eventId Идентификатор события
      * @param positive Только положительные или отрицательные, null - все
-     * @param text Текст поииска в имени автора или тексте отзыва
+     * @param text Текст поиска в имени автора или тексте отзыва
      * @param from Смещение выборки
      * @param size Размер выборки
      * @return Список отзывов
@@ -34,7 +34,7 @@ public interface CustomReviewRepository {
     /**
      * Получение рейтинга инициатора
      * @param userId Идентификатор инициатора событий
-     * @return Рейтинг события, если он может быть рассчитан
+     * @return Рейтинг инициатора, если он может быть рассчитан
      */
     OptionalDouble getInitiatorRating(long userId);
 

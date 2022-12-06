@@ -1,5 +1,6 @@
 package ru.practicum.review.service;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,19 +26,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserReviewServiceImpl implements UserReviewService {
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public @NotNull List<ReviewDto> getReviews(long userId) {

@@ -1,6 +1,7 @@
 package ru.practicum.review.service;
 
 import io.micrometer.core.lang.Nullable;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,17 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PublicReviewServiceImpl implements PublicReviewService {
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public @NotNull List<ReviewDto> getReviews(long eventId,

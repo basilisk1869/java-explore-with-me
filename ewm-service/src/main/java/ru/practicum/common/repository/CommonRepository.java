@@ -47,16 +47,16 @@ public interface CommonRepository {
     /**
      * Получение отзыва
      * @param reviewId Идентификатор отзыва
-     * @return Существующей отзыв
+     * @return Существующий отзыв
      *         или бросает {@link NotFoundException}, если отзыв не найден
      */
     @NotNull Review getReview(long reviewId);
 
     /**
-     * Получение события по идентификатору инициатора и идентификатору события
+     * Получение отзыва по идентификатору инициатора и идентификатору события
      * @param userId Идентификатор пользователя
      * @param reviewId Идентификатор отзыва
-     * @return Существующей отзыв
+     * @return Существующий отзыв
      *         или бросает {@link NotFoundException}, если пользователь или отзыв не найдены
      *         или бросает {@link ru.practicum.exception.AccessDeniedException}, если пользователь не является автором отзыва
      */
