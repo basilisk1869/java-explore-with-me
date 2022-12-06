@@ -170,6 +170,13 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         return getEventShortDtoFromQuery(jpaQuery, qEvent, qRequest);
     }
 
+    /**
+     * Получение полных DTO событий из запроса
+     * @param jpaQuery Запрос
+     * @param qEvent Сущность события
+     * @param qRequest Сущность запроса
+     * @return Список полных DTO событий
+     */
     private List<EventFullDto> getEventFullDtoFromQuery(JPAQuery<Tuple> jpaQuery, QEvent qEvent, QRequest qRequest) {
         List<EventFullDto> events = jpaQuery.fetch().stream()
                 .map(tuple -> {
@@ -188,6 +195,13 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         return events;
     }
 
+    /**
+     * Получение коротких DTO событий из запроса
+     * @param jpaQuery Запрос
+     * @param qEvent Сущность события
+     * @param qRequest Сущность запроса
+     * @return Список коротких DTO событий
+     */
     private List<EventShortDto> getEventShortDtoFromQuery(JPAQuery<Tuple> jpaQuery, QEvent qEvent, QRequest qRequest) {
         List<EventShortDto> events = jpaQuery.fetch().stream()
                 .map(tuple -> {
@@ -206,6 +220,11 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         return events;
     }
 
+    /**
+     * Получение рейтингов событий
+     * @param eventIds Список идентификаторов событий
+     * @return Список пар идентификаторов событий и их рейтинга
+     */
     private Map<Long, Double> getRatings(List<Long> eventIds) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QReview qReview = QReview.review;

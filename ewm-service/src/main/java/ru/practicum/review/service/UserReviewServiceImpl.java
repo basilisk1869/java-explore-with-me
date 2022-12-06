@@ -17,6 +17,8 @@ import ru.practicum.review.model.ReviewStatus;
 import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.user.model.User;
 
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +40,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     ModelMapper modelMapper;
 
     @Override
-    public List<ReviewDto> getReviews(long userId) {
+    public @NotNull List<ReviewDto> getReviews(long userId) {
         User reviewer = commonRepository.getUser(userId);
         return reviewRepository.findAllByReviewer(reviewer).stream()
                 .map(review -> modelMapper.map(review, ReviewDto.class))
@@ -46,7 +48,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
-    public ReviewDto postReview(long userId, NewReviewDto newReviewDto) {
+    public @NotNull ReviewDto postReview(long userId, @NotNull NewReviewDto newReviewDto) {
         User reviewer = commonRepository.getUser(userId);
         Event event = commonRepository.getEvent(newReviewDto.getEvent());
         // check reviewer is not initiator
@@ -62,6 +64,10 @@ public class UserReviewServiceImpl implements UserReviewService {
         if (reviewRepository.findByEventAndReviewer(event, reviewer).isPresent()) {
             throw new AccessDeniedException("user is reviewed this event already");
         }
+        // check that event is ended
+        if (!checkEventIsEnded(event.getEventDate())) {
+            throw new AccessDeniedException("event is not ended");
+        }
         // create review
         Review review = modelMapper.map(newReviewDto, Review.class);
         if (review.getText() == null) {
@@ -74,7 +80,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
-    public ReviewDto patchReview(long userId, long reviewId, UpdateReviewDto updateReviewDto) {
+    public @NotNull ReviewDto patchReview(long userId, long reviewId, @NotNull UpdateReviewDto updateReviewDto) {
         Review review = commonRepository.getReviewByUser(userId, reviewId);
         modelMapper.map(updateReviewDto, review);
         reviewRepository.save(review);
@@ -82,7 +88,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
-    public ReviewDto getReview(long userId, long reviewId) {
+    public @NotNull ReviewDto getReview(long userId, long reviewId) {
         Review review = commonRepository.getReviewByUser(userId, reviewId);
         return modelMapper.map(review, ReviewDto.class);
     }
@@ -91,6 +97,11 @@ public class UserReviewServiceImpl implements UserReviewService {
     public void deleteReview(long userId, long reviewId) {
         Review review = commonRepository.getReviewByUser(userId, reviewId);
         reviewRepository.delete(review);
+    }
+
+    @Override
+    public boolean checkEventIsEnded(LocalDateTime eventDate) {
+        return eventDate.isBefore(LocalDateTime.now());
     }
 
 }

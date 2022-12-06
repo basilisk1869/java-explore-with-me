@@ -2,6 +2,7 @@ package ru.practicum.review.repository;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.micrometer.core.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import ru.practicum.review.dto.ReviewDto;
@@ -10,6 +11,7 @@ import ru.practicum.review.model.Review;
 import ru.practicum.review.model.ReviewStatus;
 
 import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
@@ -24,7 +26,11 @@ public class CustomReviewRepositoryImpl implements CustomReviewRepository {
     private static final int NEUTRAL_RATING = 5;
 
     @Override
-    public List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size) {
+    public @NotNull List<ReviewDto> getReviews(long eventId,
+                                               @Nullable Boolean positive,
+                                               @Nullable String text,
+                                               int from,
+                                               int size) {
         JPAQueryFactory jpaQueryFactory = new JPAQueryFactory(entityManager);
         QReview qReview = QReview.review;
         JPAQuery<Review> jpaQuery = jpaQueryFactory.select(qReview)

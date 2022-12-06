@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.model.ReviewStatus;
+import ru.practicum.review.service.UserReviewService;
 import ru.practicum.user.dto.UserDto;
 
 import java.util.ArrayList;
@@ -23,10 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@SpyBean(UserReviewService.class)
 public class PublicReviewControllerTest extends BaseReviewControllerTest {
 
-    public PublicReviewControllerTest(@Autowired ObjectMapper objectMapper, @Autowired MockMvc mockMvc) {
-        super(objectMapper, mockMvc);
+    public PublicReviewControllerTest(@Autowired ObjectMapper objectMapper,
+                                      @Autowired MockMvc mockMvc,
+                                      @Autowired UserReviewService userReviewService) {
+        super(objectMapper, mockMvc, userReviewService);
     }
 
     @Test
@@ -40,7 +45,7 @@ public class PublicReviewControllerTest extends BaseReviewControllerTest {
         for (int i = 0; i < 10; i++) {
             UserDto requester = createUser();
             ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
-            ReviewDto review = createReview(requester.getId(), event.getId());
+            ReviewDto review = createReview(requester.getId(), event);
             expectedReviews.add(review);
         }
         // should not any confirmed reviews

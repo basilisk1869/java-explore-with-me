@@ -1,5 +1,6 @@
 package ru.practicum.review.service;
 
+import io.micrometer.core.lang.Nullable;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import ru.practicum.common.repository.CommonRepository;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.repository.ReviewRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Service
@@ -22,7 +24,11 @@ public class PublicReviewServiceImpl implements PublicReviewService {
     ModelMapper modelMapper;
 
     @Override
-    public List<ReviewDto> getReviews(long eventId, Boolean positive, String text, int from, int size) {
+    public @NotNull List<ReviewDto> getReviews(long eventId,
+                                               @Nullable Boolean positive,
+                                               @Nullable String text,
+                                               int from,
+                                               int size) {
         commonRepository.getEvent(eventId);
         return reviewRepository.getReviews(eventId, positive, text, from, size);
     }

@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.review.controller.BaseReviewControllerTest;
 import ru.practicum.review.dto.ReviewDto;
+import ru.practicum.review.service.UserReviewService;
 import ru.practicum.user.dto.UserDto;
 
 import java.util.ArrayList;
@@ -22,10 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@SpyBean(UserReviewService.class)
 public class UserEventControllerTest extends BaseReviewControllerTest {
 
-    public UserEventControllerTest(@Autowired ObjectMapper objectMapper, @Autowired MockMvc mockMvc) {
-        super(objectMapper, mockMvc);
+    public UserEventControllerTest(@Autowired ObjectMapper objectMapper,
+                                   @Autowired MockMvc mockMvc,
+                                   @Autowired UserReviewService userReviewService) {
+        super(objectMapper, mockMvc, userReviewService);
     }
 
     @Test
@@ -39,7 +44,7 @@ public class UserEventControllerTest extends BaseReviewControllerTest {
         for (int i = 0; i < 10; i++) {
             UserDto requester = createUser();
             ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
-            ReviewDto review = createReview(requester.getId(), event.getId());
+            ReviewDto review = createReview(requester.getId(), event);
             confirmReview(review.getId());
             reviews.add(review);
         }
@@ -69,12 +74,12 @@ public class UserEventControllerTest extends BaseReviewControllerTest {
             UserDto requester = createUser();
             // create review for event1
             ParticipationRequestDto request1 = createRequest(requester.getId(), event1.getId());
-            ReviewDto review1 = createReview(requester.getId(), event1.getId());
+            ReviewDto review1 = createReview(requester.getId(), event1);
             confirmReview(review1.getId());
             reviews.add(review1);
             // create review for event2
             ParticipationRequestDto request2 = createRequest(requester.getId(), event2.getId());
-            ReviewDto review2 = createReview(requester.getId(), event2.getId());
+            ReviewDto review2 = createReview(requester.getId(), event2);
             confirmReview(review2.getId());
             reviews.add(review2);
         }

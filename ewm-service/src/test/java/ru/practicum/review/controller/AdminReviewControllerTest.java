@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.model.ReviewStatus;
+import ru.practicum.review.service.UserReviewService;
 import ru.practicum.user.dto.UserDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
+@SpyBean(UserReviewService.class)
 public class AdminReviewControllerTest extends BaseReviewControllerTest {
 
-    public AdminReviewControllerTest(@Autowired ObjectMapper objectMapper, @Autowired MockMvc mockMvc) {
-        super(objectMapper, mockMvc);
+    public AdminReviewControllerTest(@Autowired ObjectMapper objectMapper,
+                                     @Autowired MockMvc mockMvc,
+                                     @Autowired UserReviewService userReviewService) {
+        super(objectMapper, mockMvc, userReviewService);
     }
 
     @Test
@@ -35,7 +40,7 @@ public class AdminReviewControllerTest extends BaseReviewControllerTest {
         UserDto requester = createUser();
         ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
         // check pending review
-        ReviewDto review1 = createReview(requester.getId(), event.getId());
+        ReviewDto review1 = createReview(requester.getId(), event);
         ReviewDto review2 = getReview(requester.getId(), review1.getId());
         assertEquals(review1, review2);
         assertEquals(ReviewStatus.PENDING, review2.getStatus());
@@ -55,7 +60,7 @@ public class AdminReviewControllerTest extends BaseReviewControllerTest {
         UserDto requester = createUser();
         ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
         // check pending review
-        ReviewDto review1 = createReview(requester.getId(), event.getId());
+        ReviewDto review1 = createReview(requester.getId(), event);
         ReviewDto review2 = getReview(requester.getId(), review1.getId());
         assertEquals(review1, review2);
         assertEquals(ReviewStatus.PENDING, review2.getStatus());

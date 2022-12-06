@@ -85,14 +85,14 @@ public class CommonRepositoryImpl implements CommonRepository {
     }
 
     @Override
-    public Review getReview(long reviewId) {
+    public @NotNull Review getReview(long reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow(() -> {
             throw new NotFoundException("review is not found");
         });
     }
 
     @Override
-    public Review getReviewByUser(long userId, long reviewId) {
+    public @NotNull Review getReviewByUser(long userId, long reviewId) {
         User reviewer = getUser(userId);
         Review review = getReview(reviewId);
         if (Objects.equals(review.getReviewer(), reviewer)) {

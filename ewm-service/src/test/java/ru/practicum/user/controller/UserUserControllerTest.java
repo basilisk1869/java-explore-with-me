@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.review.controller.BaseReviewControllerTest;
+import ru.practicum.review.service.UserReviewService;
 import ru.practicum.user.dto.UserDto;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureTestDatabase
 public class UserUserControllerTest extends BaseReviewControllerTest {
 
-    public UserUserControllerTest(@Autowired ObjectMapper objectMapper, @Autowired MockMvc mockMvc) {
-        super(objectMapper, mockMvc);
+    public UserUserControllerTest(@Autowired ObjectMapper objectMapper,
+                                  @Autowired MockMvc mockMvc,
+                                  @Autowired UserReviewService userReviewService) {
+        super(objectMapper, mockMvc, userReviewService);
     }
 
     @Test

@@ -2,6 +2,7 @@ package ru.practicum.review.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -18,6 +19,7 @@ import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.review.dto.NewReviewDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.dto.UpdateReviewDto;
+import ru.practicum.review.service.UserReviewService;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 
@@ -34,11 +36,16 @@ public class BaseReviewControllerTest {
 
     private final MockMvc mockMvc;
 
+    private final UserReviewService userReviewService;
+
     private final Random random = new Random();
 
-    public BaseReviewControllerTest(ObjectMapper objectMapper, MockMvc mockMvc) {
+    public BaseReviewControllerTest(ObjectMapper objectMapper,
+                                    MockMvc mockMvc,
+                                    UserReviewService userReviewService) {
         this.objectMapper = objectMapper;
         this.mockMvc = mockMvc;
+        this.userReviewService = userReviewService;
     }
 
     protected UserDto createUser() {
@@ -183,12 +190,14 @@ public class BaseReviewControllerTest {
         }
     }
 
-    protected ReviewDto createReview(long userId, long eventId) {
+    protected ReviewDto createReview(long userId, EventFullDto event) {
         NewReviewDto review = NewReviewDto.builder()
-                .event(eventId)
+                .event(event.getId())
                 .rating(random.nextInt(10))
                 .text("Some random review text... " + UUID.randomUUID())
                 .build();
+        Mockito.when(userReviewService.checkEventIsEnded(event.getEventDate()))
+                .thenReturn(true);
         try {
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                             .post("/users/" + userId + "/reviews")

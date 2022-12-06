@@ -9,6 +9,8 @@ import ru.practicum.review.model.Review;
 import ru.practicum.review.model.ReviewStatus;
 import ru.practicum.review.repository.ReviewRepository;
 
+import javax.validation.constraints.NotNull;
+
 @Service
 public class AdminReviewServiceImpl implements AdminReviewService {
 
@@ -22,7 +24,7 @@ public class AdminReviewServiceImpl implements AdminReviewService {
     ModelMapper modelMapper;
 
     @Override
-    public ReviewDto setReviewStatus(long reviewId, ReviewStatus reviewStatus) {
+    public @NotNull ReviewDto setReviewStatus(long reviewId, @NotNull ReviewStatus reviewStatus) {
         Review review = commonRepository.getReview(reviewId);
         review.setStatus(reviewStatus);
         reviewRepository.save(review);

@@ -8,6 +8,8 @@ import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
+import javax.validation.constraints.NotNull;
+
 @Service
 public class UserUserServiceImpl implements UserUserService {
 
@@ -21,7 +23,7 @@ public class UserUserServiceImpl implements UserUserService {
     ModelMapper modelMapper;
 
     @Override
-    public UserDto showRating(long userId, boolean showRating) {
+    public @NotNull UserDto showRating(long userId, boolean showRating) {
         User user = commonRepository.getUser(userId);
         user.setShowRating(showRating);
         userRepository.save(user);
