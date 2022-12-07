@@ -16,7 +16,7 @@ import java.util.List;
 public class PublicReviewController {
 
     @Autowired
-    PublicReviewService publicReviewService;
+    private final PublicReviewService publicReviewService;
 
     @GetMapping
     List<ReviewDto> getReviews(@PathVariable Long eventId,

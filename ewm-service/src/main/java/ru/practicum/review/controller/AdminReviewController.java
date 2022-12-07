@@ -15,7 +15,7 @@ import ru.practicum.review.service.AdminReviewService;
 public class AdminReviewController {
 
     @Autowired
-    AdminReviewService adminReviewService;
+    private final AdminReviewService adminReviewService;
 
     @PatchMapping("/{reviewId}/confirm")
     ReviewDto patchReviewAsConfirmed(@PathVariable long reviewId) {

@@ -19,7 +19,7 @@ import java.util.List;
 public class UserReviewController {
 
     @Autowired
-    UserReviewService userReviewService;
+    private final UserReviewService userReviewService;
 
     @GetMapping
     List<ReviewDto> getReviews(@PathVariable long userId) {
