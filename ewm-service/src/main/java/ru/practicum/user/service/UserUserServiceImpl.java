@@ -1,5 +1,6 @@
 package ru.practicum.user.service;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,16 +12,17 @@ import ru.practicum.user.repository.UserRepository;
 import javax.validation.constraints.NotNull;
 
 @Service
+@RequiredArgsConstructor
 public class UserUserServiceImpl implements UserUserService {
 
     @Autowired
-    CommonRepository commonRepository;
+    private final CommonRepository commonRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     @Override
     public @NotNull UserDto showRating(long userId, boolean showRating) {
