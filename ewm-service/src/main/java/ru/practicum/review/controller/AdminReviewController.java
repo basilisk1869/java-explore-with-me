@@ -19,15 +19,17 @@ public class AdminReviewController {
 
     @PatchMapping("/{reviewId}/confirm")
     ReviewDto patchReviewAsConfirmed(@PathVariable long reviewId) {
+        log.info("patchReviewAsConfirmed " + reviewId);
         ReviewDto review = adminReviewService.setReviewStatus(reviewId, ReviewStatus.CONFIRMED);
-        log.info("patchReviewAsConfirmed " + reviewId + " " + review);
+        log.info("patchReviewAsConfirmed returned " + review);
         return review;
     }
 
     @PatchMapping("/{reviewId}/reject")
     ReviewDto patchReviewAsRejected(@PathVariable long reviewId) {
+        log.info("patchReviewAsRejected " + reviewId);
         ReviewDto review = adminReviewService.setReviewStatus(reviewId, ReviewStatus.REJECTED);
-        log.info("patchReviewAsRejected " + reviewId + " " + review);
+        log.info("patchReviewAsRejected returned " + review);
         return review;
     }
 

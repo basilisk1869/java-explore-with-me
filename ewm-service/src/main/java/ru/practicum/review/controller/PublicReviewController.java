@@ -26,7 +26,7 @@ public class PublicReviewController {
                                @RequestParam(required = false, defaultValue = "10") Integer size) {
         log.info("getReviews for event " + eventId + " " + positive + " " + text);
         List<ReviewDto> reviews = publicReviewService.getReviews(eventId, positive, text, from, size);
-        log.info("getReviews for event " + eventId + " returned " + reviews);
+        log.info("getReviews returned " + reviews);
         return reviews;
     }
 
