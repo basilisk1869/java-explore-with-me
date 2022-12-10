@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateReviewDto {
 
-    private Long event;
-
     private Integer rating;
 
     private String text;

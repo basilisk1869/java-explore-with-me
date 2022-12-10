@@ -1,13 +1,13 @@
 package ru.practicum.review.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.review.dto.NewReviewDto;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.dto.UpdateReviewDto;
-import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.review.service.UserReviewService;
 
 import javax.validation.Valid;
@@ -18,10 +18,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class UserReviewController {
-    private final ReviewRepository reviewRepository;
 
-    @Autowired
     private final UserReviewService userReviewService;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     List<ReviewDto> getReviews(@PathVariable long userId) {
@@ -34,7 +34,11 @@ public class UserReviewController {
     @PostMapping
     ReviewDto postReview(@PathVariable long userId,
                          @RequestBody @Valid NewReviewDto newReviewDto) {
-        log.info("postReview " + userId + " " + newReviewDto);
+        try {
+            log.info("postReview " + userId + " " + objectMapper.writeValueAsString(newReviewDto));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         ReviewDto review = userReviewService.postReview(userId, newReviewDto);
         log.info("postReview returned " + review);
         return review;
@@ -44,7 +48,11 @@ public class UserReviewController {
     ReviewDto patchReview(@PathVariable long userId,
                           @PathVariable long reviewId,
                           @RequestBody @Valid UpdateReviewDto updateReviewDto) {
-        log.info("patchReview " + userId + " " + reviewId + " " + updateReviewDto);
+        try {
+            log.info("patchReview " + userId + " " + reviewId + " " + objectMapper.writeValueAsString(updateReviewDto));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         ReviewDto review = userReviewService.patchReview(userId, reviewId, updateReviewDto);
         log.info("patchReview returned " + review);
         return review;

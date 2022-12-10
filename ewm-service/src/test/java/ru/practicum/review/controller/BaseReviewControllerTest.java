@@ -3,6 +3,7 @@ package ru.practicum.review.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -12,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.NewCategoryDto;
+import ru.practicum.error.ApiError;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.location.dto.LocationDto;
@@ -207,6 +209,28 @@ public class BaseReviewControllerTest {
                     .andExpect(status().isOk())
                     .andReturn();
             return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReviewDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected ApiError tryCreateReview(long userId, EventFullDto event, HttpStatus httpStatus) {
+        NewReviewDto review = NewReviewDto.builder()
+                .event(event.getId())
+                .rating(random.nextInt(10))
+                .text("Some random review text... " + UUID.randomUUID())
+                .build();
+        Mockito.when(userReviewService.checkEventIsEnded(event.getEventDate()))
+                .thenReturn(true);
+        try {
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .post("/users/" + userId + "/reviews")
+                            .accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(review)))
+                    .andExpect(status().is(httpStatus.value()))
+                    .andReturn();
+            return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ApiError.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
@@ -38,6 +39,37 @@ public class UserReviewControllerTest extends BaseReviewControllerTest {
         UserDto requester = createUser();
         ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
         createReview(requester.getId(), event);
+    }
+
+    @Test
+    void tryPostReviewByInitiator() {
+        UserDto initiator = createUser();
+        CategoryDto category = createCategory();
+        EventFullDto event = createEvent(initiator.getId(), category.getId());
+        event = publishEvent(event.getId());
+        tryCreateReview(initiator.getId(), event, HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void tryPostReviewByNotParticipant() {
+        UserDto initiator = createUser();
+        CategoryDto category = createCategory();
+        EventFullDto event = createEvent(initiator.getId(), category.getId());
+        event = publishEvent(event.getId());
+        UserDto requester = createUser();
+        tryCreateReview(requester.getId(), event, HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void tryPostReviewTwice() {
+        UserDto initiator = createUser();
+        CategoryDto category = createCategory();
+        EventFullDto event = createEvent(initiator.getId(), category.getId());
+        event = publishEvent(event.getId());
+        UserDto requester = createUser();
+        ParticipationRequestDto request = createRequest(requester.getId(), event.getId());
+        createReview(requester.getId(), event);
+        tryCreateReview(requester.getId(), event, HttpStatus.CONFLICT);
     }
 
     @Test

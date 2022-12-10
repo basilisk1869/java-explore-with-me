@@ -2,11 +2,11 @@ package ru.practicum.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.repository.CommonRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.AccessDeniedException;
+import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
@@ -29,16 +29,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserReviewServiceImpl implements UserReviewService {
 
-    @Autowired
     private final CommonRepository commonRepository;
 
-    @Autowired
     private final ReviewRepository reviewRepository;
 
-    @Autowired
     private final RequestRepository requestRepository;
 
-    @Autowired
     private final ModelMapper modelMapper;
 
     @Override
@@ -64,7 +60,7 @@ public class UserReviewServiceImpl implements UserReviewService {
         }
         // check if review is already exists
         if (reviewRepository.findByEventAndReviewer(event, reviewer).isPresent()) {
-            throw new AccessDeniedException("user is reviewed this event already");
+            throw new AlreadyExistsException("user is reviewed this event already");
         }
         // check that event is ended
         if (!checkEventIsEnded(event.getEventDate())) {

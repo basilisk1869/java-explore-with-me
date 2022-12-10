@@ -2,7 +2,6 @@ package ru.practicum.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.common.repository.CommonRepository;
 import ru.practicum.review.dto.ReviewDto;
@@ -16,13 +15,10 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 public class AdminReviewServiceImpl implements AdminReviewService {
 
-    @Autowired
     private final CommonRepository commonRepository;
 
-    @Autowired
     private final ReviewRepository reviewRepository;
 
-    @Autowired
     private final ModelMapper modelMapper;
 
     @Override

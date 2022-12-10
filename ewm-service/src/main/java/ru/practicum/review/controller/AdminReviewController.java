@@ -2,8 +2,10 @@ package ru.practicum.review.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.review.dto.ReviewDto;
 import ru.practicum.review.model.ReviewStatus;
 import ru.practicum.review.service.AdminReviewService;
@@ -14,7 +16,6 @@ import ru.practicum.review.service.AdminReviewService;
 @Slf4j
 public class AdminReviewController {
 
-    @Autowired
     private final AdminReviewService adminReviewService;
 
     @PatchMapping("/{reviewId}/confirm")
