@@ -1,5 +1,3 @@
-https://github.com/basilisk1869/java-explore-with-me/pull/1
-
 # JAVA-EXPLORE-WITH-ME
 
 ## Идея

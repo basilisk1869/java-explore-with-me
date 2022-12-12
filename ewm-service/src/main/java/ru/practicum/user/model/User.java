@@ -35,4 +35,9 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    /**
+     * Показывать рейтинг как инициатора событий и рейтинг своих событий
+     */
+    private Boolean showRating = false;
+
 }

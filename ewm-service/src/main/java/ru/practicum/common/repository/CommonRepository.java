@@ -6,6 +6,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.model.Request;
+import ru.practicum.review.model.Review;
 import ru.practicum.user.model.User;
 
 import javax.validation.constraints.NotNull;
@@ -42,6 +43,24 @@ public interface CommonRepository {
      *         или бросает {@link ru.practicum.exception.AccessDeniedException}, если пользователь не является инициатором события
      */
     @NotNull Event getEventByUser(long userId, long eventId);
+
+    /**
+     * Получение отзыва
+     * @param reviewId Идентификатор отзыва
+     * @return Существующий отзыв
+     *         или бросает {@link NotFoundException}, если отзыв не найден
+     */
+    @NotNull Review getReview(long reviewId);
+
+    /**
+     * Получение отзыва по идентификатору инициатора и идентификатору события
+     * @param userId Идентификатор пользователя
+     * @param reviewId Идентификатор отзыва
+     * @return Существующий отзыв
+     *         или бросает {@link NotFoundException}, если пользователь или отзыв не найдены
+     *         или бросает {@link ru.practicum.exception.AccessDeniedException}, если пользователь не является автором отзыва
+     */
+    @NotNull Review getReviewByUser(long userId, long reviewId);
 
     /**
      * Получение пользователя по идентификатору
