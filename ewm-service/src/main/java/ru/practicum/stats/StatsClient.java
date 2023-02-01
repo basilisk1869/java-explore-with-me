@@ -1,25 +1,15 @@
 package ru.practicum.stats;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -28,6 +18,16 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * Клиент запроса статистики просмотров
  */
@@ -35,15 +35,27 @@ import ru.practicum.event.dto.EventShortDto;
 @Slf4j
 public class StatsClient {
 
+    private static final String TOPIC = "hits";
+
+    private final Environment environment;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
     private final RestTemplate restTemplate;
+
+    private final ObjectMapper objectMapper;
 
     /**
      * Создание клиента
      * @param environment Переменные конфигурации
      * @param builder Генератор для RestTemplate
      */
-    public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder) {
-        restTemplate = builder
+    public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder,
+                       @Autowired KafkaTemplate<String, String> kafkaTemplate, @Autowired ObjectMapper objectMapper) {
+        this.environment = environment;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
+        this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(
                     Objects.requireNonNull(environment.getProperty("stats-server-url"))))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
@@ -56,9 +68,27 @@ public class StatsClient {
      * @return Ответ сервера статистики
      */
     public @NotNull ResponseEntity<Object> postEndpointHit(@NotNull EndpointHitDto endpointHitDto) {
-        HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitDto, defaultHeaders());
-        return restTemplate.exchange("/hit", HttpMethod.POST,
-                requestEntity, Object.class);
+        boolean useKafka = Boolean.parseBoolean(Objects.requireNonNull(environment.getProperty("use-kafka")));
+        if (useKafka) {
+            try {
+                String message = objectMapper.writeValueAsString(endpointHitDto);
+                kafkaTemplate.send(TOPIC, message).get();
+            } catch (InterruptedException e) {
+                log.error("postEndpointHit: InterruptedException - " + e);
+                return ResponseEntity.internalServerError().build();
+            } catch (ExecutionException e) {
+                log.error("postEndpointHit: ExecutionException - " + e);
+                return ResponseEntity.internalServerError().build();
+            } catch (JsonProcessingException e) {
+                log.error("postEndpointHit: JsonProcessingException - " + e);
+                return ResponseEntity.internalServerError().build();
+            }
+            return ResponseEntity.ok().build();
+        } else {
+            HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitDto, defaultHeaders());
+            return restTemplate.exchange("/hit", HttpMethod.POST,
+                    requestEntity, Object.class);
+        }
     }
 
     /**
