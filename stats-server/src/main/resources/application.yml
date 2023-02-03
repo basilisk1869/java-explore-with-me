@@ -20,7 +20,7 @@ spring:
             mode: always
     kafka:
         consumer:
-            bootstrap-servers: ${KAFKA_HOST}:9092
+            bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
             group-id: ewm_id
             key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer

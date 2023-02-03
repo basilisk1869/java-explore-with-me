@@ -20,14 +20,12 @@ spring:
             mode: always
     kafka:
         producer:
-            bootstrap-servers: ${KAFKA_HOST}:9092
+            bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
-            value-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
 
 springdoc:
     swagger-ui:
         url: openapi.json
 
 stats-server-url: http://${STATS_SERVER}:${STATS_PORT}
-
-use-kafka: yes

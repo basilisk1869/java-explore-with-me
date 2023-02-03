@@ -10,78 +10,98 @@ services:
   stats-db:
     image: postgres:14-alpine
     ports:
-      - "9091:5432"
+      - "9432:5432"
     environment:
-      - POSTGRES_DB=stats
-      - POSTGRES_USER=stats-user
-      - POSTGRES_PASSWORD=stats-password
+      POSTGRES_DB: stats
+      POSTGRES_USER: stats-user
+      POSTGRES_PASSWORD: stats-password
     depends_on:
       - dozzle
 
   ewm-db:
     image: postgres:14-alpine
     ports:
-      - "8081:5432"
+      - "8432:5432"
     environment:
-      - POSTGRES_DB=ewm
-      - POSTGRES_USER=ewm-user
-      - POSTGRES_PASSWORD=ewm-password
+      POSTGRES_DB: ewm
+      POSTGRES_USER: ewm-user
+      POSTGRES_PASSWORD: ewm-password
     depends_on:
       - dozzle
 
   zookeeper:
-    image: bitnami/zookeeper
+    image: confluentinc/cp-zookeeper
     ports:
       - "2181:2181"
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
     depends_on:
       - dozzle
 
   kafka:
-    image: bitnami/kafka:3.3.2
+    image: confluentinc/cp-kafka
     ports:
       - "9092:9092"
     environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_ADVERTISED_HOST_NAME=kafka
-      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "hits:1:1"
     depends_on:
       - dozzle
       - zookeeper
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_DEBUG: "true"
+    depends_on:
+      - dozzle
+      - zookeeper
+      - kafka
 
   stats-server:
     build: stats-server
     ports:
       - "9090:9090"
     environment:
-      - DB_HOST=stats-db
-      - DB_PORT=5432
-      - DB_NAME=stats
-      - DB_USER=stats-user
-      - DB_PASSWORD=stats-password
-      - KAFKA_HOST=kafka
+      DB_HOST: stats-db
+      DB_PORT: 5432
+      DB_NAME: stats
+      DB_USER: stats-user
+      DB_PASSWORD: stats-password
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 9092
     depends_on:
       - dozzle
       - stats-db
       - kafka
+      - schema-registry
 
   ewm-service:
     build: ewm-service
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=ewm-db
-      - DB_PORT=5432
-      - DB_NAME=ewm
-      - DB_USER=ewm-user
-      - DB_PASSWORD=ewm-password
-      - STATS_SERVER=stats-server
-      - STATS_PORT=9090
-      - KAFKA_HOST=kafka
+      DB_HOST: ewm-db
+      DB_PORT: 5432
+      DB_NAME: ewm
+      DB_USER: ewm-user
+      DB_PASSWORD: ewm-password
+      STATS_SERVER: stats-server
+      STATS_PORT: 9090
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 9092
     depends_on:
       - dozzle
       - ewm-db
       - kafka
+      - schema-registry
       - stats-server

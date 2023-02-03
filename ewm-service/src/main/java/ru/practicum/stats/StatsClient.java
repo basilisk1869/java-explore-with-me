@@ -1,7 +1,5 @@
 package ru.practicum.stats;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.avro.EndpointHitAvro;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 
@@ -37,13 +36,9 @@ public class StatsClient {
 
     private static final String TOPIC = "hits";
 
-    private final Environment environment;
-
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, EndpointHitAvro> kafkaTemplate;
 
     private final RestTemplate restTemplate;
-
-    private final ObjectMapper objectMapper;
 
     /**
      * Создание клиента
@@ -51,10 +46,8 @@ public class StatsClient {
      * @param builder Генератор для RestTemplate
      */
     public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder,
-                       @Autowired KafkaTemplate<String, String> kafkaTemplate, @Autowired ObjectMapper objectMapper) {
-        this.environment = environment;
+                       @Autowired KafkaTemplate<String, EndpointHitAvro> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
         this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(
                     Objects.requireNonNull(environment.getProperty("stats-server-url"))))
@@ -64,30 +57,15 @@ public class StatsClient {
 
     /**
      * Отправка данных о просмотре
-     * @param endpointHitDto Данные о просмотре
-     * @return Ответ сервера статистики
+     * @param endpointHit Данные о просмотре
      */
-    public @NotNull ResponseEntity<Object> postEndpointHit(@NotNull EndpointHitDto endpointHitDto) {
-        boolean useKafka = Boolean.parseBoolean(Objects.requireNonNull(environment.getProperty("use-kafka")));
-        if (useKafka) {
-            try {
-                String message = objectMapper.writeValueAsString(endpointHitDto);
-                kafkaTemplate.send(TOPIC, message).get();
-            } catch (InterruptedException e) {
-                log.error("postEndpointHit: InterruptedException - " + e);
-                return ResponseEntity.internalServerError().build();
-            } catch (ExecutionException e) {
-                log.error("postEndpointHit: ExecutionException - " + e);
-                return ResponseEntity.internalServerError().build();
-            } catch (JsonProcessingException e) {
-                log.error("postEndpointHit: JsonProcessingException - " + e);
-                return ResponseEntity.internalServerError().build();
-            }
-            return ResponseEntity.ok().build();
-        } else {
-            HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitDto, defaultHeaders());
-            return restTemplate.exchange("/hit", HttpMethod.POST,
-                    requestEntity, Object.class);
+    public void postEndpointHit(@NotNull EndpointHitAvro endpointHit) {
+        try {
+            kafkaTemplate.send(TOPIC, endpointHit).get();
+        } catch (InterruptedException e) {
+            log.error("postEndpointHit: InterruptedException - " + e);
+        } catch (ExecutionException e) {
+            log.error("postEndpointHit: ExecutionException - " + e);
         }
     }
 

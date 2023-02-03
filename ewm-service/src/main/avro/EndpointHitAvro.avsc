@@ -1,0 +1,10 @@
+{"namespace": "ru.practicum.avro",
+  "type": "record",
+  "name": "EndpointHitAvro",
+  "fields": [
+    {"name": "app", "type": "string"},
+    {"name": "uri", "type": "string"},
+    {"name": "ip", "type": "string"},
+    {"name": "timestamp",  "type": "long"}
+  ]
+}
