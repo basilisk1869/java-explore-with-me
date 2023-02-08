@@ -10,7 +10,7 @@
 
 ## Стек
 
-- Java, Spring Boot
+- Java 17, Spring Boot
 - Swagger, OpenAPI
 - PostgreSQL, QueryDSL
 - Kafka, Avro
