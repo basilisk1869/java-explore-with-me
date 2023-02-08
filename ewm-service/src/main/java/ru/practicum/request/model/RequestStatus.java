@@ -10,7 +10,7 @@ public enum RequestStatus {
     PENDING,
 
     /**
-     * Подтвежден
+     * Подтвержден
      */
     CONFIRMED,
 

@@ -17,11 +17,14 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
+import ru.practicum.review.model.Review;
+import ru.practicum.review.repository.ReviewRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.OptionalDouble;
 
 @Component
 @RequiredArgsConstructor
@@ -42,6 +45,9 @@ public class CommonRepositoryImpl implements CommonRepository {
 
     @Autowired
     private final RequestRepository requestRepository;
+
+    @Autowired
+    private final ReviewRepository reviewRepository;
 
     @Autowired
     private final ModelMapper modelMapper;
@@ -79,6 +85,24 @@ public class CommonRepositoryImpl implements CommonRepository {
     }
 
     @Override
+    public @NotNull Review getReview(long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(() -> {
+            throw new NotFoundException("review is not found");
+        });
+    }
+
+    @Override
+    public @NotNull Review getReviewByUser(long userId, long reviewId) {
+        User reviewer = getUser(userId);
+        Review review = getReview(reviewId);
+        if (Objects.equals(review.getReviewer(), reviewer)) {
+            return review;
+        } else {
+            throw new AccessDeniedException("user has no access for this review");
+        }
+    }
+
+    @Override
     public @NotNull User getUser(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> {
             throw new NotFoundException("user is not found");
@@ -104,6 +128,23 @@ public class CommonRepositoryImpl implements CommonRepository {
         EventFullDto eventFullDto = modelMapper.map(event, EventFullDto.class);
         eventFullDto.setConfirmedRequests(getConfirmedRequests(event));
         eventFullDto.setViews(0L);
+        // if rating shown
+        if (event.getInitiator().getShowRating()) {
+            // set event rating
+            OptionalDouble eventRating = reviewRepository.getEventRating(event.getId());
+            if (eventRating.isPresent()) {
+                eventFullDto.setRating(eventRating.getAsDouble());
+            } else {
+                eventFullDto.setRating(null);
+            }
+            // set initiator rating
+            OptionalDouble initiatorRating = reviewRepository.getInitiatorRating(event.getInitiator().getId());
+            if (initiatorRating.isPresent()) {
+                eventFullDto.getInitiator().setRating(initiatorRating.getAsDouble());
+            } else {
+                eventFullDto.getInitiator().setRating(null);
+            }
+        }
         return eventFullDto;
     }
 

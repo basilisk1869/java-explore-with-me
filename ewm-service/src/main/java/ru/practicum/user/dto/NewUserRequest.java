@@ -20,4 +20,6 @@ public class NewUserRequest {
     @NotBlank
     private String name;
 
+    private Boolean showRating = false;
+
 }

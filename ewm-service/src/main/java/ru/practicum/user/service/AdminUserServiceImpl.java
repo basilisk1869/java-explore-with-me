@@ -34,9 +34,13 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public @NotNull List<UserDto> getUsers(@Nullable List<Long> ids, int from, int size) {
         DataRange<User> dataRange = new DataRange<>(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        List<User> users = userRepository.findAll(dataRange.getPageable()).getContent();
+        List<User> users;
+        if ((ids != null) && (ids.size() > 0)) {
+            users = userRepository.findAllByIdIn(ids, dataRange.getPageable());
+        } else {
+            users = userRepository.findAll(dataRange.getPageable()).getContent();
+        }
         return dataRange.trimPage(users).stream()
-                .filter(user -> (ids == null || ids.size() == 0 || ids.contains(user.getId())))
                 .map(user -> modelMapper.map(user, UserDto.class))
                 .collect(Collectors.toList());
     }
@@ -58,4 +62,5 @@ public class AdminUserServiceImpl implements AdminUserService {
         userRepository.delete(user);
         userRepository.flush();
     }
+
 }

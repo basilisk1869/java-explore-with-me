@@ -41,4 +41,5 @@ public class AdminUserController {
         log.info("deleteUser " + userId);
         adminUserService.deleteUser(userId);
     }
+
 }
