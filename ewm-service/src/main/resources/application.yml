@@ -18,9 +18,14 @@ spring:
     sql:
         init:
             mode: always
+    kafka:
+        producer:
+            bootstrap-servers: ${KAFKA_HOST}:${KAFKA_PORT}
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
 
 springdoc:
     swagger-ui:
         url: openapi.json
 
-stats-server-url: http://stats-server:9090
+stats-server-url: http://${STATS_SERVER}:${STATS_PORT}

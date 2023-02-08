@@ -1,32 +1,31 @@
 package ru.practicum.stats;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.avro.EndpointHitAvro;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
+
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Клиент запроса статистики просмотров
@@ -35,6 +34,10 @@ import ru.practicum.event.dto.EventShortDto;
 @Slf4j
 public class StatsClient {
 
+    private static final String TOPIC = "hits";
+
+    private final KafkaTemplate<String, EndpointHitAvro> kafkaTemplate;
+
     private final RestTemplate restTemplate;
 
     /**
@@ -42,8 +45,10 @@ public class StatsClient {
      * @param environment Переменные конфигурации
      * @param builder Генератор для RestTemplate
      */
-    public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder) {
-        restTemplate = builder
+    public StatsClient(@Autowired Environment environment, @Autowired RestTemplateBuilder builder,
+                       @Autowired KafkaTemplate<String, EndpointHitAvro> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.restTemplate = builder
                 .uriTemplateHandler(new DefaultUriBuilderFactory(
                     Objects.requireNonNull(environment.getProperty("stats-server-url"))))
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new)
@@ -52,13 +57,16 @@ public class StatsClient {
 
     /**
      * Отправка данных о просмотре
-     * @param endpointHitDto Данные о просмотре
-     * @return Ответ сервера статистики
+     * @param endpointHit Данные о просмотре
      */
-    public @NotNull ResponseEntity<Object> postEndpointHit(@NotNull EndpointHitDto endpointHitDto) {
-        HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitDto, defaultHeaders());
-        return restTemplate.exchange("/hit", HttpMethod.POST,
-                requestEntity, Object.class);
+    public void postEndpointHit(@NotNull EndpointHitAvro endpointHit) {
+        try {
+            kafkaTemplate.send(TOPIC, endpointHit).get();
+        } catch (InterruptedException e) {
+            log.error("postEndpointHit: InterruptedException - " + e);
+        } catch (ExecutionException e) {
+            log.error("postEndpointHit: ExecutionException - " + e);
+        }
     }
 
     /**
