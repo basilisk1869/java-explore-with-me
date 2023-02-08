@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.avro.EndpointHitAvro;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.PublicEventService;
-import ru.practicum.stats.EndpointHitDto;
 import ru.practicum.stats.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,11 +42,11 @@ public class PublicEventController {
         log.info("getEvents");
         List<EventShortDto> result = publicEventService.getEvents(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, sort, from, size);
-        statsClient.postEndpointHit(EndpointHitDto.builder()
-                .app("ewm")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .timestamp(LocalDateTime.now())
+        statsClient.postEndpointHit(EndpointHitAvro.newBuilder()
+                .setApp("ewm")
+                .setUri(request.getRequestURI())
+                .setIp(request.getRemoteAddr())
+                .setTimestamp(Instant.now().toEpochMilli())
                 .build());
         return result;
     }
@@ -54,11 +55,11 @@ public class PublicEventController {
     EventFullDto getEvent(@PathVariable long eventId, HttpServletRequest request) {
         log.info("getEvent " + eventId);
         EventFullDto eventFullDto = publicEventService.getEvent(eventId);
-        statsClient.postEndpointHit(EndpointHitDto.builder()
-                .app("ewm")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .timestamp(LocalDateTime.now())
+        statsClient.postEndpointHit(EndpointHitAvro.newBuilder()
+                .setApp("ewm")
+                .setUri(request.getRequestURI())
+                .setIp(request.getRemoteAddr())
+                .setTimestamp(Instant.now().toEpochMilli())
                 .build());
         return eventFullDto;
     }
