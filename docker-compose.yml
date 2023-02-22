@@ -43,9 +43,12 @@ services:
     image: confluentinc/cp-kafka
     ports:
       - "9092:9092"
+      - "9991:9991"
     environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_JMX_PORT: 9991
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "hits:1:1"
     depends_on:
@@ -66,6 +69,43 @@ services:
       - dozzle
       - zookeeper
       - kafka
+
+  jmx-kafka:
+    image: sscaling/jmx-prometheus-exporter
+    ports:
+       - "5556:5556"
+    environment:
+      CONFIG_YML : "/etc/jmx_exporter/config.yml"
+    volumes:
+      - ./etc/jmx_exporter/config.yml:/etc/jmx_exporter/config.yml
+    depends_on:
+      - dozzle
+      - kafka
+
+  prometheus:
+    image: bitnami/prometheus
+    ports:
+      - "19090:9090"
+    volumes:
+     - ./etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - dozzle
+      - jmx-kafka
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_PATHS_DATA : /var/lib/grafana
+      GF_SECURITY_ADMIN_PASSWORD : kafka
+    volumes:
+     - ./etc/grafana/provisioning:/etc/grafana/provisioning
+     - ./etc/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - dozzle
+      - prometheus
 
   stats-server:
     build: stats-server
