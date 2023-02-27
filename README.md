@@ -10,11 +10,12 @@
 
 ## Стек
 
-- Java 17, Spring Boot
-- Swagger, OpenAPI
+- Java, Spring Boot
+- REST, Swagger, OpenAPI
 - PostgreSQL, QueryDSL
 - Kafka, Avro
-- Lombok, JUnit
+- JUnit, Postman
+- Prometheus, Grafana
 
 ## Исходный код
 
@@ -47,7 +48,7 @@ stats-server - сбор статистики<br>
 
 ### Логи
 
-Приложение предоставляет доступ к live time логам с помощью Dozzle.<br>
+Приложение предоставляет доступ к live time логам с помощью Dozzle: <br>
 http://localhost:7070 <br>
 
 ### Сервис ewm-service
@@ -63,3 +64,27 @@ Swagger: http://localhost:8080/swagger-ui/index.html <br>
 Swagger: http://localhost:9090/swagger-ui/index.html <br>
 Имеет следующую структуру БД:<br>
 ![stats-schema.png](doc%2Fstats-schema.png)
+
+### Тестирование
+
+Приложение тестируется через Postman, файлы коллекций: <br>
+`postman/ewm-service.json` <br>
+`postman/stats-server.json` <br>
+![postman.png](doc%2Fpostman.png)
+
+### Визуализация
+
+Метрики сервера Kafka можно посмотреть в Grafana. <br>
+Grafana: http://localhost:3000 <br>
+![grafana.png](doc%2Fgrafana.png)
+
+### Ссылки
+
+- https://spring.io
+- https://swagger.io
+- https://www.postgresql.org
+- https://kafka.apache.org
+- https://avro.apache.org
+- https://www.postman.com
+- https://prometheus.io
+- https://grafana.com
