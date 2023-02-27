@@ -98,8 +98,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      GF_PATHS_DATA : /var/lib/grafana
-      GF_SECURITY_ADMIN_PASSWORD : kafka
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
     volumes:
      - ./etc/grafana/provisioning:/etc/grafana/provisioning
      - ./etc/grafana/dashboards:/var/lib/grafana/dashboards
