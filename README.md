@@ -42,6 +42,8 @@ https://github.com/basilisk1869/java-explore-with-me <br>
 ewm-service - основная функциональность приложения,<br>
 stats-server - сбор статистики<br>
 Каждый сервис взаимодействует со своей базой данных.<br>
+Данные о просмотре событий пересылаются из ewm-service в stats-server через Kafka.<br>
+<br>
 ![architecture.png](doc%2Farchitecture.png)
 
 ### Логи
